@@ -7,6 +7,23 @@ import lecture04 from '../content/notes/lecture-04-gray.md?raw'
 import lecture05 from '../content/notes/lecture-05-pwm-motor.md?raw'
 import lecture06 from '../content/notes/lecture-06-pid.md?raw'
 import gitGuide from '../content/notes/git-github-desktop.md?raw'
+import momentsRaw from '../content/moments.md?raw'
+
+// 解析碎碎念：把 moments.md 里每个「## 日期 | 心情」区块转成对象
+const parseMoments = (raw) => {
+  const body = raw.replace(/<!--[\s\S]*?-->/g, '')
+  return body
+    .split(/^##\s+/m)
+    .slice(1)
+    .map((block) => {
+      const lines = block.split('\n')
+      const head = lines.shift().trim()
+      const [date, mood] = head.split('|').map((s) => s.trim())
+      const text = lines.join(' ').replace(/\s+/g, ' ').trim()
+      return { date, mood: mood || '平静', text }
+    })
+    .filter((m) => /^\d{4}-\d{2}-\d{2}$/.test(m.date) && m.text)
+}
 
 // 站点信息
 export const site = {
@@ -35,54 +52,9 @@ export const series = [
   { name: 'TI M0 课程笔记', desc: '电赛特训：米醋电子 TI M0 系列课程', icon: 'code' },
 ]
 
-// 碎碎念（日记式短想法）
-export const moments = [
-  {
-    date: '2026-10-27',
-    mood: '平静',
-    text: '把第六讲的循迹环参数重新调了一遍，发现上次调不稳的原因居然是积分限幅给小了。这种"原来错的是我"的感觉，居然还挺爽的。',
-  },
-  {
-    date: '2026-10-26',
-    mood: '开心',
-    text: '给博客加了个碎碎念页面。以后短的想法就发在这里，不再硬憋成长文——大部分想法其实只值三行字。',
-  },
-  {
-    date: '2026-10-24',
-    mood: '有点丧',
-    text: '状态不好，一整天只写了 40 行代码，其中 30 行在调串口。算了，把椅子调低一点，明天继续。',
-  },
-  {
-    date: '2026-10-21',
-    mood: '平静',
-    text: '把第三讲的 ADC 配置笔记整理完了。最大的收获不是那几个寄存器，而是搞清楚了采样时间和转换模式之间的关系。',
-  },
-  {
-    date: '2026-10-18',
-    mood: '放松',
-    text: '周末去了趟书店，买了一本和嵌入式毫无关系的散文集。给自己放个假，大脑也需要复位。',
-  },
-  {
-    date: '2026-10-15',
-    mood: '灵光一现',
-    text: '突然理解了为什么 PID 要做成串级：内环负责"快"，外环负责"稳"，两个环各干各的，比一个环硬扛好调太多了。',
-  },
-  {
-    date: '2026-10-11',
-    mood: '平静',
-    text: '写博客比想象中难。想清楚和写清楚之间，隔着一整个太平洋。',
-  },
-  {
-    date: '2026-10-07',
-    mood: '愧疚',
-    text: '国庆最后一天。玩了两天游戏，把小车忘在实验室了。周一再说，周一一定说。',
-  },
-  {
-    date: '2026-10-03',
-    mood: '开心',
-    text: '凌晨两点终于把 Ringbuffer 的读写指针捋顺了，串口再也不会丢字节。这种深夜的进步最上头。',
-  },
-]
+// 碎碎念：内容写在 src/content/moments.md，格式是「## 日期 | 心情」+ 正文
+// 这里只负责解析，加新的一条不用改代码
+export const moments = parseMoments(momentsRaw)
 
 // 学习轨迹（关于页时间线）
 export const timeline = [
