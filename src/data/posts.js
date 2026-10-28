@@ -14,7 +14,7 @@ export const site = {
   tagline: '失之东隅，收之桑榆',
   author: '海滩长颈鹿',
   bio: '分享学习日常，还有记录我的心情。主攻嵌入式，偶尔写点有的没的。',
-  avatar: '/avatar.jpg',
+  avatar: '/avatar.webp',
   since: '2025-06-01',
   links: [
     { icon: 'github', href: 'https://github.com', label: 'GitHub' },

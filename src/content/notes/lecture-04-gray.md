@@ -37,13 +37,13 @@
 
 ## 接线说明
 
-![ScreenShot_2026-07-14_012809_728](/notes/lecture-04-gray/image/ScreenShot_2026-07-14_012809_728.png)
+![ScreenShot_2026-07-14_012809_728](/notes/lecture-04-gray/image/ScreenShot_2026-07-14_012809_728.webp)
 
-![微信图片_20260714012832_61_14](/notes/lecture-04-gray/image/微信图片_20260714012832_61_14.png)
+![微信图片_20260714012832_61_14](/notes/lecture-04-gray/image/微信图片_20260714012832_61_14.webp)
 
-![微信图片_20260712222118_58_14](/notes/lecture-04-gray/image/微信图片_20260712222118_58_14.png)
+![微信图片_20260712222118_58_14](/notes/lecture-04-gray/image/微信图片_20260712222118_58_14.webp)
 
-![微信图片_20260712222234_59_14](/notes/lecture-04-gray/image/微信图片_20260712222234_59_14.png)
+![微信图片_20260712222234_59_14](/notes/lecture-04-gray/image/微信图片_20260712222234_59_14.webp)
 
 
 

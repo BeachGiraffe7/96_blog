@@ -10,9 +10,9 @@ https://oshwhub.com/the-first-development-team-of-no/kong-zhi-ban
 
 https://item.szlcsc.com/44281600.html
 
-![26ee4813-54d2-4ee2-8d08-a19b7714f6a5](/notes/lecture-00/image/26ee4813-54d2-4ee2-8d08-a19b7714f6a5.png)
+![26ee4813-54d2-4ee2-8d08-a19b7714f6a5](/notes/lecture-00/image/26ee4813-54d2-4ee2-8d08-a19b7714f6a5.webp)
 
-![5072e688-3d57-4cc8-accd-25fb06e632f6](/notes/lecture-00/image/5072e688-3d57-4cc8-accd-25fb06e632f6.png)
+![5072e688-3d57-4cc8-accd-25fb06e632f6](/notes/lecture-00/image/5072e688-3d57-4cc8-accd-25fb06e632f6.webp)
 
 ## 二、芯片解锁
 

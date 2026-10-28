@@ -156,15 +156,15 @@ SysConfig 是 TI 提供的图形化/脚本化配置工具。它的作用类似 S
 7. `SYSCTL` 中使能 `Validate Clock Status`。
 8. 进入 `SYSTICK`，使能 `Period`，Period 填 `80000`，使能 `Interrupt`，Priority 设为 `0`，并使能 `SysTick`。
 
-![Snipaste_2026-07-05_20-37-10](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_20-37-10.png)
+![Snipaste_2026-07-05_20-37-10](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_20-37-10.webp)
 
-![7213c19c-c367-496c-8cb5-a96bded0049b](/notes/lecture-01-clock-gpio/image/7213c19c-c367-496c-8cb5-a96bded0049b.png)
+![7213c19c-c367-496c-8cb5-a96bded0049b](/notes/lecture-01-clock-gpio/image/7213c19c-c367-496c-8cb5-a96bded0049b.webp)
 
 
 
-![e562d35b-378d-458a-b411-6000487a0f42](/notes/lecture-01-clock-gpio/image/e562d35b-378d-458a-b411-6000487a0f42.png)
+![e562d35b-378d-458a-b411-6000487a0f42](/notes/lecture-01-clock-gpio/image/e562d35b-378d-458a-b411-6000487a0f42.webp)
 
-![2505225d-d612-4586-8c34-4463481737e6](/notes/lecture-01-clock-gpio/image/2505225d-d612-4586-8c34-4463481737e6.png)
+![2505225d-d612-4586-8c34-4463481737e6](/notes/lecture-01-clock-gpio/image/2505225d-d612-4586-8c34-4463481737e6.webp)
 
 
 
@@ -299,9 +299,9 @@ void scheduler_run(void)
 
 ### 引脚定义
 
-![Snipaste_2026-07-05_19-03-00](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-03-00.png)
+![Snipaste_2026-07-05_19-03-00](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-03-00.webp)
 
-![Snipaste_2026-07-05_19-04-01](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-04-01.png)
+![Snipaste_2026-07-05_19-04-01](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-04-01.webp)
 
 ```c
 #define KEY2_PORT   GPIOB
@@ -379,9 +379,9 @@ key_old  = key_val;
 
 ## LED 显示代码
 
-![Snipaste_2026-07-05_19-05-16](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-05-16.png)
+![Snipaste_2026-07-05_19-05-16](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-05-16.webp)
 
-![Snipaste_2026-07-05_19-04-46](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-04-46.png)
+![Snipaste_2026-07-05_19-04-46](/notes/lecture-01-clock-gpio/image/Snipaste_2026-07-05_19-04-46.webp)
 
 ### LED 输出宏
 

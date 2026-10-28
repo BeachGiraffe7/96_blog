@@ -48,6 +48,18 @@ function CodeBlock({ lang, lines }) {
   )
 }
 
+// 很多截图工具的 alt 就是文件名（Snipaste_2026-07-05、26ee4813-...、微信图片_...），
+// 这种不适合当图注显示出来。
+function isFileName(alt) {
+  if (!alt) return true
+  return (
+    /^(\d{6,}|[0-9a-f]{8}-[0-9a-f]{4}|[0-9a-f]{16,})/i.test(alt) ||
+    /^(Snipaste|ScreenShot|Screenshot|WechatIMG|IMG_|image)/i.test(alt) ||
+    /微信图片/.test(alt) ||
+    /\.(png|jpe?g|webp|gif|svg)$/i.test(alt)
+  )
+}
+
 function Table({ rows }) {
   const cells = rows.map((r) => r.replace(/^\||\|$/g, '').split('|').map((c) => c.trim()))
   const [head, , ...body] = cells
@@ -172,7 +184,7 @@ export default function Markdown({ source, skipH1 = true }) {
       out.push(
         <figure key={`k${key++}`} className="md-figure">
           <img src={img[2]} alt={img[1]} loading="lazy" />
-          {img[1] && <figcaption>{img[1]}</figcaption>}
+          {!isFileName(img[1]) && <figcaption>{img[1]}</figcaption>}
         </figure>,
       )
       i++
