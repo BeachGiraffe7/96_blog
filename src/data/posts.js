@@ -33,6 +33,11 @@ export const site = {
   bio: '分享学习日常，还有记录我的心情。主攻嵌入式，偶尔写点有的没的。',
   avatar: '/avatar.webp',
   since: '2025-06-01',
+  // 写作页（/write）用这些信息直接提交到 GitHub
+  repo: 'BeachGiraffe7/96_blog',
+  branch: 'main',
+  momentsPath: 'src/content/moments.md',
+  siteUrl: 'https://96-blog.pages.dev',
   links: [
     { icon: 'github', href: 'https://github.com', label: 'GitHub' },
     { icon: 'douyin', href: 'https://www.douyin.com', label: '抖音' },

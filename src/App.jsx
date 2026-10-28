@@ -7,6 +7,7 @@ import Categories from './pages/Categories'
 import Tags from './pages/Tags'
 import About from './pages/About'
 import Moments from './pages/Moments'
+import Write from './pages/Write'
 import PostDetail from './pages/PostDetail'
 
 function NotFound() {
@@ -25,6 +26,8 @@ export default function App() {
 
   return (
     <Routes>
+      {/* 写作页不套三栏布局，手机上打开更清爽 */}
+      <Route path="/write" element={<Write />} />
       <Route element={<Layout query={query} onQueryChange={setQuery} />}>
         <Route path="/" element={<Home />} />
         <Route path="/category/:name" element={<Home />} />

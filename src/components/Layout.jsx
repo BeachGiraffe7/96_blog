@@ -61,7 +61,7 @@ export default function Layout({ query, onQueryChange }) {
   )
 }
 
-export function PageHead({ title, desc, count }) {
+export function PageHead({ title, desc, count, action }) {
   return (
     <div className="page-head">
       <div>
@@ -71,10 +71,13 @@ export function PageHead({ title, desc, count }) {
         </h1>
         {desc && <p className="page-desc">{desc}</p>}
       </div>
-      <Link to="/" className="back-home">
-        <Icon.arrowLeft />
-        返回主页
-      </Link>
+      <div className="page-head-actions">
+        {action}
+        <Link to="/" className="back-home">
+          <Icon.arrowLeft />
+          返回主页
+        </Link>
+      </div>
     </div>
   )
 }

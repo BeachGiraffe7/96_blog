@@ -18,7 +18,17 @@ export default function Moments() {
 
   return (
     <div className="feed">
-      <PageHead title="碎碎念" desc="不够长、但值得记下来的想法都在这里。" count={moments.length} />
+      <PageHead
+        title="碎碎念"
+        desc="不够长、但值得记下来的想法都在这里。"
+        count={moments.length}
+        action={
+          <Link to="/write" className="page-action">
+            <Icon.spark />
+            写一条
+          </Link>
+        }
+      />
 
       <div className="card moments-card">
         <div className="moments-summary">
