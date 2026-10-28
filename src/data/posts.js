@@ -6,6 +6,7 @@ import lecture03 from '../content/notes/lecture-03-timer-adc-dac.md?raw'
 import lecture04 from '../content/notes/lecture-04-gray.md?raw'
 import lecture05 from '../content/notes/lecture-05-pwm-motor.md?raw'
 import lecture06 from '../content/notes/lecture-06-pid.md?raw'
+import gitGuide from '../content/notes/git-github-desktop.md?raw'
 
 // 站点信息
 export const site = {
@@ -188,6 +189,18 @@ export const posts = [
   },
 
   // ============ 技术杂谈 ============
+  {
+    slug: 'git-github-desktop',
+    title: '【教程】Git、GitHub、GitHub Desktop 到底谁是谁',
+    category: '技术',
+    date: '2026-10-28',
+    views: 96,
+    tags: ['Git', 'GitHub', '部署', '教程'],
+    markdown: gitGuide,
+    cover: 'aurora',
+    excerpt:
+      '本地改完 → Commit 存档 → Push 上传 → Cloudflare 自动构建。这篇文章把 Git、GitHub、GitHub Desktop 三者的关系和完整部署流程讲清楚，末尾还有一次真实的 404 排查记录。',
+  },
   {
     slug: 'ai-coding',
     title: '【观点】正确使用 AI Coding',

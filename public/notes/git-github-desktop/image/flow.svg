@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 322" width="1000" height="322" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dfa1b6" />
+    </marker>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#fdf6f9" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="322" rx="16" fill="#fdf8fa" />
+
+  <text x="26" y="38" fill="#9b8d94" font-size="15.5" letter-spacing="0.6">一次「改网站」的完整链路</text>
+  <line x1="26" y1="52" x2="974" y2="52" stroke="#f4dee8" stroke-width="1" />
+
+  <!-- 步骤 1 -->
+  <g>
+    <rect x="24" y="96" width="272" height="118" rx="14" fill="url(#card)" stroke="#f2dae4" />
+    <circle cx="48" cy="122" r="5" fill="#e0718f" />
+    <text x="62" y="128" fill="#3a2f35" font-size="20" font-weight="600">你的电脑</text>
+    <text x="46" y="160" fill="#6d6167" font-size="16.5">D:\07_WorkProject\96_blog</text>
+    <text x="46" y="188" fill="#9b8d94" font-size="15.5">改代码、写文章、本地预览</text>
+  </g>
+
+  <!-- 步骤 2 -->
+  <g>
+    <rect x="364" y="96" width="272" height="118" rx="14" fill="url(#card)" stroke="#f2dae4" />
+    <circle cx="388" cy="122" r="5" fill="#7cc7b2" />
+    <text x="402" y="128" fill="#3a2f35" font-size="20" font-weight="600">GitHub 仓库</text>
+    <text x="386" y="160" fill="#6d6167" font-size="16.5">BeachGiraffe7/96_blog</text>
+    <text x="386" y="188" fill="#9b8d94" font-size="15.5">存放源码与全部历史版本</text>
+  </g>
+
+  <!-- 步骤 3 -->
+  <g>
+    <rect x="704" y="96" width="272" height="118" rx="14" fill="url(#card)" stroke="#f2dae4" />
+    <circle cx="728" cy="122" r="5" fill="#f0b46a" />
+    <text x="742" y="128" fill="#3a2f35" font-size="20" font-weight="600">Cloudflare Pages</text>
+    <text x="726" y="160" fill="#6d6167" font-size="16.5">检测到新提交 → 自动构建</text>
+    <text x="726" y="188" fill="#9b8d94" font-size="15.5">输出静态文件，全球 CDN</text>
+  </g>
+
+  <!-- 箭头 -->
+  <g stroke="#dfa1b6" stroke-width="1.8" fill="none">
+    <line x1="300" y1="155" x2="358" y2="155" marker-end="url(#ar)" />
+    <line x1="640" y1="155" x2="698" y2="155" marker-end="url(#ar)" />
+  </g>
+
+  <!-- 箭头说明 -->
+  <text x="329" y="86" fill="#c25d80" font-size="15.5" font-weight="600" text-anchor="middle">Commit + Push</text>
+  <text x="669" y="86" fill="#c25d80" font-size="15.5" font-weight="600" text-anchor="middle">自动触发</text>
+
+  <!-- 步骤标注 -->
+  <text x="160" y="240" fill="#b39aa4" font-size="15" text-anchor="middle">① 你手动完成</text>
+  <text x="500" y="240" fill="#b39aa4" font-size="15" text-anchor="middle">② 平台自动完成</text>
+  <text x="840" y="240" fill="#b39aa4" font-size="15" text-anchor="middle">③ 读者打开 96-blog.pages.dev</text>
+
+  <line x1="26" y1="262" x2="974" y2="262" stroke="#f4dee8" stroke-width="1" />
+
+  <text x="26" y="290" fill="#6d6167" font-size="15.5">线上跑的是 Cloudflare 构建出的成品，不是电脑里的文件。本地改了没 Push，线上就不会变。</text>
+  <text x="26" y="312" fill="#9b8d94" font-size="15.5">日常只需两个动作：</text>
+  <text x="196" y="312" fill="#c25d80" font-size="15.5" font-weight="600">Commit（存档）→ Push（上传）</text>
+</svg>

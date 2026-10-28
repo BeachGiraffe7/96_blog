@@ -8,7 +8,7 @@ export default function Home() {
   const [sp] = useSearchParams()
   const q = (sp.get('q') || '').trim().toLowerCase()
 
-  let list = posts
+  let list = [...posts].sort((a, b) => b.date.localeCompare(a.date))
   if (catName) list = list.filter((p) => p.category === catName)
   if (q)
     list = list.filter((p) =>
