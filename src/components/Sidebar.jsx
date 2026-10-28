@@ -59,7 +59,7 @@ export function CategoryCard() {
 
 export function SeriesCard() {
   return (
-    <section className="card side-card">
+    <section className="card side-card series-card">
       <div className="side-card-head">
         <span className="side-card-bar" />
         <h2>系列</h2>
