@@ -183,6 +183,10 @@ export default function Write() {
           <p className="write-note">
             Cloudflare 会自动重新构建，大约 1–2 分钟后线上就能看到。刷新时记得强制刷新。
           </p>
+          <p className="write-hint">
+            在电脑上开发时注意：这条记录只提交到了 GitHub，本地文件还没变，先
+            <code> git pull</code> 一下再改代码，否则下次推送会冲突。
+          </p>
           <div className="write-actions">
             <a
               className="write-btn"
