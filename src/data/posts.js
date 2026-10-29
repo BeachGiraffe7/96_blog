@@ -37,7 +37,7 @@ export const site = {
   repo: 'BeachGiraffe7/96_blog',
   branch: 'main',
   momentsPath: 'src/content/moments.md',
-  siteUrl: 'https://96-blog.pages.dev',
+  siteUrl: 'https://beachgiraffe.pages.dev',
   links: [
     { icon: 'github', href: 'https://github.com', label: 'GitHub' },
     { icon: 'douyin', href: 'https://www.douyin.com', label: '抖音' },

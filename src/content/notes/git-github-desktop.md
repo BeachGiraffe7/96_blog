@@ -2,7 +2,7 @@
 
 这篇文章写给和我一样，第一次碰版本控制就想关掉页面的人。
 
-起因很简单：我把自己的博客部署到了 `96-blog.pages.dev`，然后产生了一个疑问——我以后是在本地改代码，用 GitHub Desktop 更新仓库，网站就会自动更新吗？答案是的，但中间有几个环节值得搞清楚，否则一旦出错就完全不知道该看哪里。
+起因很简单：我把自己的博客部署到了 `beachgiraffe.pages.dev`，然后产生了一个疑问——我以后是在本地改代码，用 GitHub Desktop 更新仓库，网站就会自动更新吗？答案是的，但中间有几个环节值得搞清楚，否则一旦出错就完全不知道该看哪里。
 
 ## 一句话结论
 
@@ -91,7 +91,7 @@ Desktop 是你电脑上的软件，负责操作本地仓库；GitHub 是云端�
 3. 确认没问题，用 GitHub Desktop 提交并推送
 4. GitHub 上的 `BeachGiraffe7/96_blog` 收到新提交
 5. Cloudflare Pages 检测到变化，自动执行 `npm run build`
-6. 构建产物上传到 CDN，`96-blog.pages.dev` 变成新版本
+6. 构建产物上传到 CDN，`beachgiraffe.pages.dev` 变成新版本
 
 所以你的理解是对的，**只需要记住一件事：本地改完必须 Push**。
 
@@ -132,19 +132,55 @@ npm run dev
 
 ### 第 3 步：在 Cloudflare 上接上仓库
 
-1. 打开 `dash.cloudflare.com`，登录
-2. 左侧 `Workers & Pages` → `Create` → `Pages` → `Connect to Git`
-3. 授权 GitHub，选中 `96_blog` 仓库
-4. 构建配置照抄：
+这一步是我实际操作时截图记下来的，界面文字按 2026 年的中文控制台写的。如果你看到的是英文界面，意思一一对应。
 
-| 配置项 | 填什么 |
+**① 进入 Workers & Pages，点「创建应用程序」**
+
+登录 `dash.cloudflare.com`，左侧栏「计算」分组里点 `Workers & Pages`，然后点右上角的蓝色按钮。
+
+![](/notes/git-github-desktop/image/cf-01-workers-pages.webp)
+
+**② 选择「Continue with GitHub」**
+
+弹出「创建新项目」面板后，选第一个 `Continue with GitHub`（用 GitLab 就选右边那个）。
+
+注意面板底部还有一行小字「需要使用旧版 Pages 工作流？继续前往 Pages」——两种入口都能到达 Pages，走 GitHub 这个更顺。
+
+**③ 在「开始使用 Pages」页选「导入现有 Git 存储库」**
+
+这里有两个选项：`导入现有 Git 存储库` 和 `拖放文件`。我们已经有仓库了，选第一个，点右侧的「开始使用」。
+
+（`拖放文件` 是直接把 `dist` 文件夹拖上去，适合没有仓库的情况，但那样每次更新都得手动重传。）
+
+![](/notes/git-github-desktop/image/cf-03-import-git.webp)
+
+**④ 选中仓库**
+
+页面上方会出现步骤条：`1 选择存储库 → 2 设置构建和部署 → 3 部署站点`。
+
+- GitHub 帐户：选你自己的账号
+- 选择一个存储库：点 `96_blog`
+
+选中后点右下角 `开始设置`。
+
+![](/notes/git-github-desktop/image/cf-04-select-repo.webp)
+
+**⑤ 填构建配置**
+
+- 生产分支：`main`
+- 框架预设：选 **`React (Vite)`**（列表里还有纯 `Vite` 和 `VitePress`，别选错）
+
+选完预设，构建命令和输出目录会自动填好：
+
+| 配置项 | 自动填入的值 |
 | --- | --- |
-| Framework preset | `Vite` |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Root directory | 留空 |
+| 构建命令 | `npm run build` |
+| 部署目录 | `dist` |
+| 根目录 | 留空 |
 
-5. 点 `Save and Deploy`，等一两分钟
+![](/notes/git-github-desktop/image/cf-05-build-config.webp)
+
+点 `保存并部署`。它会开始拉代码、装依赖、跑构建，一两分钟后给出一个 `xxx.pages.dev` 地址。
 
 ### 第 4 步：验证
 
@@ -154,6 +190,23 @@ npm run dev
 - 复制文章链接（形如 `/post/lecture-06-pid`），在新标签页直接粘贴访问，能打开
 
 第二条是在测「前端路由回退」。这正好是本文最后一节要讲的真实 bug。
+
+### 第 5 步（可选）：换个好记的域名
+
+`96-blog.pages.dev` 这种地址自己都记不住，更别说发给别人。不用花钱也能改：**项目名就是子域名**。
+
+1. 进入这个 Pages 项目 → `Settings`
+2. 找到 `Project name`（项目名称），点改名
+3. 保存后回到 `Deployments`，对最新一次部署点 `⋯` → `重试部署`
+
+新地址立刻生效，例如把 `96-blog` 改成 `beachgiraffe`，网址就变成 `beachgiraffe.pages.dev`。
+
+⚠️ 代价是**旧地址会失效，而且没法做 301 跳转**（子域名会被释放）。所以：
+
+- 只在刚上线、还没到处发链接的时候改名
+- 改完记得同步代码里的地址（本站是 `src/data/posts.js` 里的 `siteUrl`），以及 sitemap、RSS 里的旧链接
+
+如果链接已经撒出去了，改用零停机的做法：新建一个项目连同一个仓库，在新地址验证通过后再删旧项目。
 
 ## 五、演示 B：日常改一次网站
 
@@ -165,7 +218,7 @@ npm run dev
 4. 点这个文件，右侧能看到红绿 diff：红色是删掉的行，绿色是新加的行
 5. 左下角 Summary 写 `更新首页标语`，点 `Commit to main`
 6. 右上角出现 `Push origin`，点它
-7. 等 1～2 分钟，刷新 `96-blog.pages.dev`（按 `Ctrl + F5` 强制刷新）
+7. 等 1～2 分钟，刷新 `beachgiraffe.pages.dev`（按 `Ctrl + F5` 强制刷新）
 
 站点就更新了。整个过程里，你不需要碰命令行。
 
@@ -199,13 +252,13 @@ if (process.env.CF_PAGES === '1') {
 }
 ```
 
-这个修复已经在本地提交了，正等着你推送。你可以把它当成第一次实操：
+这个修复当时已经推送上线了。验证的方法很简单——直接把文章链接粘到浏览器地址栏：
 
-1. 打开 GitHub Desktop，右上角会显示 `Push origin` 带一个数字（说明有 2 个提交在等）
-2. 点它
-3. 等 Cloudflare 构建完成
-4. 新开一个标签页，直接访问 `https://96-blog.pages.dev/post/lecture-01-clock-gpio`
-5. 如果修好了，这次返回的是正常页面，而不再是 404
+`https://beachgiraffe.pages.dev/post/lecture-01-clock-gpio`
+
+修好之前，页面能显示正文，但开发者工具里的状态码是 404；修好之后是正常的 200。
+
+顺带记一个排查习惯：分享到微信后卡片显示"页面不存在"、但自己点开明明有内容，八成就是状态码不对这种「看起来正常、其实不正常」的问题。
 
 ## 七、改坏了怎么救
 
