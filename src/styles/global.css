@@ -1200,6 +1200,29 @@ button {
   margin-bottom: 18px;
 }
 
+/* 全局 reset 去掉了列表符号，正文里要补回来 */
+.article-content ul,
+.article-content ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+
+.article-content ul {
+  list-style: disc;
+}
+
+.article-content ol {
+  list-style: decimal;
+}
+
+.article-content li {
+  margin-bottom: 7px;
+}
+
+.article-content li::marker {
+  color: #d79cb2;
+}
+
 /* 正文按需加载时的占位，避免整页跳动 */
 .article-loading {
   padding: 40px 0;

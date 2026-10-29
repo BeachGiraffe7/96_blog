@@ -162,6 +162,7 @@ export default function Growth() {
             <WeeklyPanel
               week={week}
               entry={weekly?.weeks?.[week]}
+              days={daily?.days}
               onSave={saveWeek}
               onChangeWeek={(w) => setQuery({ w, tab: 'weekly' })}
               canWrite={canWrite}

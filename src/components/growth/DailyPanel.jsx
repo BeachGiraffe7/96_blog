@@ -1,38 +1,52 @@
 import { useEffect, useState } from 'react'
 import TaskList from './TaskList'
 import Markdown from '../Markdown'
-import { localDate, MOODS } from '../../data/growth'
+import { localDate, MOODS, DAY_PARTS, readDay, joinDayParts } from '../../data/growth'
 
 const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
 export default function DailyPanel({ date, day, onSave, onSelectDate, canWrite }) {
-  const [tasks, setTasks] = useState(day?.tasks || [])
-  const [summary, setSummary] = useState(day?.summary || '')
-  const [mood, setMood] = useState(day?.mood || '平静')
+  const [tasks, setTasks] = useState(readDay(day).tasks)
+  const [parts, setParts] = useState(() => {
+    const d = readDay(day)
+    return { learned: d.learned, stuck: d.stuck, next: d.next }
+  })
+  const [mood, setMood] = useState(readDay(day).mood)
   const [preview, setPreview] = useState(false)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
 
   useEffect(() => {
-    setTasks(day?.tasks || [])
-    setSummary(day?.summary || '')
-    setMood(day?.mood || '平静')
+    const d = readDay(day)
+    setTasks(d.tasks)
+    setParts({ learned: d.learned, stuck: d.stuck, next: d.next })
+    setMood(d.mood)
     setMsg('')
     setPreview(false)
   }, [date, day])
 
-  const base = JSON.stringify({ tasks: day?.tasks || [], summary: day?.summary || '', mood: day?.mood || '平静' })
-  const now = JSON.stringify({ tasks, summary, mood })
+  const base = JSON.stringify(readDay(day))
+  const now = JSON.stringify({ tasks, learned: parts.learned, stuck: parts.stuck, next: parts.next, mood })
   const dirty = base !== now
   const isToday = date === localDate()
-  const checkedIn = Boolean(summary.trim())
+  const filled = Boolean(parts.learned.trim() || parts.stuck.trim() || parts.next.trim())
+  const totalChars = [parts.learned, parts.stuck, parts.next].join('').replace(/\s/g, '').length
 
   const save = async () => {
     if (!canWrite || saving) return
     setSaving(true)
     setMsg('')
     try {
-      await onSave({ date, tasks, summary, mood, updatedAt: new Date().toISOString() })
+      await onSave({
+        date,
+        tasks,
+        learned: parts.learned,
+        stuck: parts.stuck,
+        next: parts.next,
+        summary: joinDayParts(parts),
+        mood,
+        updatedAt: new Date().toISOString(),
+      })
       setMsg('已提交，约 1–2 分钟后线上生效')
     } catch (e) {
       setMsg(e.message || '保存失败')
@@ -50,7 +64,7 @@ export default function DailyPanel({ date, day, onSave, onSelectDate, canWrite }
           <h2 className="daily-date">
             {date}
             <span className="daily-week">{weekday}</span>
-            {checkedIn && <span className="daily-badge">已打卡</span>}
+            {filled && <span className="daily-badge">已打卡</span>}
           </h2>
           <p className="daily-sub">{isToday ? '今天' : '补记'}</p>
         </div>
@@ -85,7 +99,7 @@ export default function DailyPanel({ date, day, onSave, onSelectDate, canWrite }
           type="button"
           className="growth-btn ghost sm"
           onClick={() => setPreview((v) => !v)}
-          disabled={!summary.trim()}
+          disabled={!filled}
         >
           {preview ? '编辑' : '预览'}
         </button>
@@ -93,21 +107,34 @@ export default function DailyPanel({ date, day, onSave, onSelectDate, canWrite }
 
       {preview ? (
         <div className="daily-preview article-content">
-          <Markdown source={summary} />
+          {DAY_PARTS.filter((f) => (parts[f.key] || '').trim()).map((f) => (
+            <div key={f.key} className="daily-preview-part">
+              <h4 className="daily-preview-h">{f.label}</h4>
+              <Markdown source={parts[f.key]} />
+            </div>
+          ))}
         </div>
       ) : (
-        <textarea
-          className="growth-textarea"
-          placeholder="今天学了什么、卡在哪、明天接着做什么……（支持 Markdown）"
-          value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-          readOnly={!canWrite}
-          rows={9}
-        />
+        <div className="day-fields">
+          {DAY_PARTS.map((f) => (
+            <div key={f.key} className="growth-field">
+              <label htmlFor={`day-${f.key}`}>{f.label}</label>
+              <textarea
+                id={`day-${f.key}`}
+                className={f.key === 'learned' ? 'growth-textarea' : 'growth-textarea sm'}
+                placeholder={f.placeholder}
+                value={parts[f.key]}
+                onChange={(e) => setParts({ ...parts, [f.key]: e.target.value })}
+                readOnly={!canWrite}
+                rows={f.key === 'learned' ? 5 : 3}
+              />
+            </div>
+          ))}
+        </div>
       )}
 
       <footer className="daily-foot">
-        <span className="daily-count">{summary.trim().length} 字</span>
+        <span className="daily-count">{totalChars} 字</span>
         <div className="daily-actions">
           {msg && <span className="daily-msg">{msg}</span>}
           <button
