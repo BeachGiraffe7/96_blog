@@ -32,6 +32,16 @@ export const Icon = {
       <path d="M20 14.5A8 8 0 0 1 9.5 4a8.2 8.2 0 1 0 10.5 10.5Z" />
     </svg>
   ),
+
+  palette: (p) => (
+    <svg {...base} {...p}>
+      <path d="M12 2.6C6.8 2.6 2.6 6.8 2.6 12s4.2 9.4 9.4 9.4c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.12a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55 0-4.24-4.5-8.64-9.96-8.64Z" />
+      <circle cx="7.4" cy="12.1" r="1.25" fill="currentColor" stroke="none" />
+      <circle cx="9.3" cy="7.6" r="1.25" fill="currentColor" stroke="none" />
+      <circle cx="13.6" cy="7" r="1.25" fill="currentColor" stroke="none" />
+      <circle cx="16.8" cy="10.4" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  ),
   settings: (p) => (
     <svg {...base} {...p}>
       <circle cx="12" cy="12" r="3" />

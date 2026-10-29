@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from './Icons'
 import ThemePanel from './ThemePanel'
 import { site } from '../data/posts'
-import { applyTheme, setTheme, watchSystem } from '../lib/theme'
+import { applyTheme, watchSystem } from '../lib/theme'
 
 const nav = [
   { to: '/', label: '主页', end: true },
@@ -18,7 +18,7 @@ const nav = [
 export default function Header({ query, onQueryChange }) {
   const [open, setOpen] = useState(false)
   const [panel, setPanel] = useState(false)
-  const [mode, setMode] = useState('light')
+  const [hint, setHint] = useState(false)
   const inputRef = useRef(null)
   const navigate = useNavigate()
 
@@ -27,8 +27,9 @@ export default function Header({ query, onQueryChange }) {
   }, [open])
 
   useEffect(() => {
-    setMode(applyTheme())
-    return watchSystem(setMode)
+    applyTheme()
+    // 系统深浅变化时 applyTheme 已在内部处理，这里只需保持订阅
+    return watchSystem(() => {})
   }, [])
 
   const submit = (e) => {
@@ -36,9 +37,9 @@ export default function Header({ query, onQueryChange }) {
     navigate(query ? `/?q=${encodeURIComponent(query)}` : '/')
   }
 
-  const toggleTheme = () => {
-    setPanel(false)
-    setMode(setTheme(mode === 'dark' ? 'light' : 'dark'))
+  const showHint = () => {
+    setHint(true)
+    window.setTimeout(() => setHint(false), 2600)
   }
 
   return (
@@ -92,28 +93,28 @@ export default function Header({ query, onQueryChange }) {
 
           <button
             type="button"
-            className="icon-btn theme-toggle"
-            onClick={toggleTheme}
-            aria-label={mode === 'dark' ? '切换到浅色' : '切换到深色'}
-            title={mode === 'dark' ? '切换到浅色' : '切换到深色'}
-          >
-            {mode === 'dark' ? <Icon.sun /> : <Icon.moon />}
-          </button>
-
-          <button
-            type="button"
             className={panel ? 'icon-btn theme-toggle active' : 'icon-btn theme-toggle'}
             onClick={() => setPanel((v) => !v)}
             aria-label="外观设置"
             aria-expanded={panel}
-            title="外观设置"
+            title="外观与字体"
+          >
+            <Icon.palette />
+          </button>
+
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={showHint}
+            aria-label="设置"
+            title="设置"
           >
             <Icon.settings />
           </button>
 
-          {panel && (
-            <ThemePanel onClose={() => setPanel(false)} onModeChange={setMode} />
-          )}
+          {hint && <span className="header-hint">更多设置稍后上线</span>}
+
+          {panel && <ThemePanel onClose={() => setPanel(false)} />}
         </div>
       </div>
     </header>

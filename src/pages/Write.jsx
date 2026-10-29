@@ -4,6 +4,8 @@ import { gh, checkRepo, readFile, writeFile } from '../lib/github'
 import { site } from '../data/posts'
 import { Icon } from '../components/Icons'
 import PostEditor from '../components/PostEditor'
+import WriteGate from '../components/WriteGate'
+import { isWriteUnlocked, lockWrite } from '../lib/writeAuth'
 
 const MOODS = ['平静', '开心', '有点丧', '灵光一现', '放松', '愧疚']
 
@@ -30,6 +32,7 @@ export default function Write() {
   const [sending, setSending] = useState(false)
   const [done, setDone] = useState(false)
   const [published, setPublished] = useState(null)
+  const [unlocked, setUnlocked] = useState(isWriteUnlocked)
 
   useEffect(() => {
     document.title = type === 'post' ? '写文章 · 海滩长颈鹿' : '写一条碎碎念 · 海滩长颈鹿'
@@ -128,22 +131,46 @@ export default function Write() {
 
   const titleText = type === 'post' ? '写文章' : '写一条'
 
-  return (
-    <div className="write-page">
-      <header className="write-header">
-        <Link to={type === 'post' ? '/' : '/moments'} className="write-back">
-          <Icon.arrowLeft />
-          {type === 'post' ? '主页' : '碎碎念'}
-        </Link>
-        <span className="write-title">{titleText}</span>
-        {token ? (
+  const header = (
+    <header className="write-header">
+      <Link to={type === 'post' ? '/' : '/moments'} className="write-back">
+        <Icon.arrowLeft />
+        {type === 'post' ? '主页' : '碎碎念'}
+      </Link>
+      <span className="write-title">{titleText}</span>
+      <div className="write-head-actions">
+        {token && (
           <button type="button" className="write-ghost" onClick={logout}>
             断开
           </button>
-        ) : (
-          <span className="write-ghost placeholder" />
         )}
-      </header>
+        <button
+          type="button"
+          className="write-ghost"
+          onClick={() => {
+            lockWrite()
+            setUnlocked(false)
+          }}
+          title="锁定撰写入口"
+        >
+          锁定
+        </button>
+      </div>
+    </header>
+  )
+
+  if (!unlocked) {
+    return (
+      <div className="write-page">
+        {header}
+        <WriteGate onUnlocked={() => setUnlocked(true)} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="write-page">
+      {header}
 
       <nav className="write-tabs">
         <button
