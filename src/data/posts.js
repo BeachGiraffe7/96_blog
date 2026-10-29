@@ -1,5 +1,6 @@
 // 文章正文不在这里导入：见 src/data/bodies.js，按路由按需加载
 import momentsRaw from '../content/moments.md?raw'
+import livePostsRaw from './livePosts.json'
 
 // 解析碎碎念：把 moments.md 里每个「## 日期 | 心情」区块转成对象
 const parseMoments = (raw) => {
@@ -65,7 +66,7 @@ export const timeline = [
 
 // 文章
 
-export const posts = [
+const staticPosts = [
   // ============ TI M0 课程笔记系列 ============
   {
     slug: 'lecture-00',
@@ -302,6 +303,11 @@ export const posts = [
     ],
   },
 ]
+
+// 写作页发布的新文章：元信息在 livePosts.json，正文在 src/content/notes/<slug>.md
+export const livePosts = Array.isArray(livePostsRaw) ? livePostsRaw : []
+
+export const posts = [...staticPosts, ...livePosts].sort((a, b) => (a.date < b.date ? 1 : -1))
 
 // 派生数据
 export const categoryCount = (name) => posts.filter((p) => p.category === name).length

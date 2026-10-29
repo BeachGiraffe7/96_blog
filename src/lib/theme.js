@@ -21,15 +21,12 @@ export const PALETTES = [
 export const FONTS = [
   { id: 'sans', label: '无衬线', note: '系统字体，最快' },
   { id: 'wenkai', label: '文楷', note: '手写楷，需下载' },
-  { id: 'xiaolai', label: '小赖', note: '圆润手写，需下载' },
-  { id: 'serif', label: '宋体粗', note: '系统宋体加粗' },
-  { id: 'kai', label: '楷体粗', note: '系统楷体加粗' },
+  { id: 'kai', label: '楷体', note: '系统楷体' },
 ]
 
 // 手写体走 CDN，按需插入 <link>：不选就不请求
 const WEBFONTS = {
   wenkai: 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css',
-  xiaolai: 'https://cdn.jsdelivr.net/npm/@chinese-fonts/xiaolai@3.0.0/dist/Xiaolai/result.css',
 }
 
 const loadedFonts = new Set()

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { gh, checkRepo, readFile, writeFile } from '../lib/github'
 import { site } from '../data/posts'
 import { Icon } from '../components/Icons'
+import PostEditor from '../components/PostEditor'
 
 const MOODS = ['平静', '开心', '有点丧', '灵光一现', '放松', '愧疚']
 
@@ -13,6 +14,9 @@ const today = () => {
 }
 
 export default function Write() {
+  const [sp, setSp] = useSearchParams()
+  const type = sp.get('type') === 'post' ? 'post' : 'moment'
+
   const [token, setToken] = useState('')
   const [tokenDraft, setTokenDraft] = useState('')
   const [saved, setSaved] = useState(false)
@@ -25,18 +29,29 @@ export default function Write() {
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [done, setDone] = useState(false)
+  const [published, setPublished] = useState(null)
 
   useEffect(() => {
-    document.title = '写一条碎碎念 · 海滩长颈鹿'
+    document.title = type === 'post' ? '写文章 · 海滩长颈鹿' : '写一条碎碎念 · 海滩长颈鹿'
     const t = gh.getToken()
     if (t) {
       setToken(t)
       setTokenDraft(t)
     }
-  }, [])
+  }, [type])
 
   const repo = site.repo
   const canSend = useMemo(() => text.trim().length > 0 && !sending, [text, sending])
+
+  const switchType = (next) => {
+    const p = new URLSearchParams(sp)
+    if (next === 'post') p.set('type', 'post')
+    else p.delete('type')
+    setSp(p, { replace: true })
+    setDone(false)
+    setPublished(null)
+    setError('')
+  }
 
   const connect = async (e) => {
     e.preventDefault()
@@ -111,14 +126,16 @@ export default function Write() {
     }
   }
 
+  const titleText = type === 'post' ? '写文章' : '写一条'
+
   return (
     <div className="write-page">
       <header className="write-header">
-        <Link to="/moments" className="write-back">
+        <Link to={type === 'post' ? '/' : '/moments'} className="write-back">
           <Icon.arrowLeft />
-          碎碎念
+          {type === 'post' ? '主页' : '碎碎念'}
         </Link>
-        <span className="write-title">写一条</span>
+        <span className="write-title">{titleText}</span>
         {token ? (
           <button type="button" className="write-ghost" onClick={logout}>
             断开
@@ -127,6 +144,23 @@ export default function Write() {
           <span className="write-ghost placeholder" />
         )}
       </header>
+
+      <nav className="write-tabs">
+        <button
+          type="button"
+          className={type === 'moment' ? 'write-tab active' : 'write-tab'}
+          onClick={() => switchType('moment')}
+        >
+          碎碎念
+        </button>
+        <button
+          type="button"
+          className={type === 'post' ? 'write-tab active' : 'write-tab'}
+          onClick={() => switchType('post')}
+        >
+          文章
+        </button>
+      </nav>
 
       {error && <div className="write-alert error">{error}</div>}
       {info && <div className="write-alert ok">{info}</div>}
@@ -174,6 +208,38 @@ export default function Write() {
             </button>
           </form>
         </section>
+      ) : published ? (
+        <section className="write-card center">
+          <div className="write-done-icon">
+            <Icon.spark />
+          </div>
+          <h2>已提交，正在构建</h2>
+          <p className="write-note">
+            《{published.title}》的正文和目录都已提交。Cloudflare 会自动构建，约 1–2 分钟后线上可见。
+          </p>
+          <p className="write-hint">
+            在电脑上继续开发时注意：这次只改了 GitHub，本地文件还没变，先 <code>git pull</code>。
+          </p>
+          <div className="write-actions">
+            <a
+              className="write-btn"
+              href={`${site.siteUrl}/post/${published.slug}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              打开线上文章
+            </a>
+            <button
+              type="button"
+              className="write-btn ghost"
+              onClick={() => setPublished(null)}
+            >
+              再写一篇
+            </button>
+          </div>
+        </section>
+      ) : type === 'post' ? (
+        <PostEditor token={token} onPublished={setPublished} />
       ) : done ? (
         <section className="write-card center">
           <div className="write-done-icon">

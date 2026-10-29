@@ -67,6 +67,15 @@ export default function Header({ query, onQueryChange }) {
         </nav>
 
         <div className="header-actions">
+          <Link
+            to="/write?type=post"
+            className="icon-btn accent compose-btn"
+            aria-label="写文章"
+            title="写文章"
+          >
+            <Icon.plus />
+          </Link>
+
           <form className={open ? 'search-box open' : 'search-box'} onSubmit={submit}>
             <input
               ref={inputRef}

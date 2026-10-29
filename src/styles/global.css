@@ -13,11 +13,9 @@
   /* 字体：默认无衬线，可在外观面板切换 */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Helvetica Neue', sans-serif;
-  --font-serif: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'Noto Serif SC', Georgia, serif;
   --font-kai: 'Kaiti SC', 'KaiTi', 'STKaiti', 'Yuanti SC', 'Microsoft YaHei', sans-serif;
   /* 这两个走 CDN，只在选中时才插入 <link>，不选就不下载 */
   --font-wenkai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
-  --font-xiaolai: 'Xiaolai SC', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   --font-reading: var(--font-sans);
 
   --radius: 16px;
@@ -237,20 +235,12 @@
 }
 
 /* 字体档位 */
-[data-font='serif'] {
-  --font-reading: var(--font-serif);
-}
-
 [data-font='kai'] {
   --font-reading: var(--font-kai);
 }
 
 [data-font='wenkai'] {
   --font-reading: var(--font-wenkai);
-}
-
-[data-font='xiaolai'] {
-  --font-reading: var(--font-xiaolai);
 }
 
 * {
@@ -1582,23 +1572,19 @@ button {
 }
 
 /* 衬线/圆体的字面更小，行高与字距要跟着调 */
-[data-font='serif'] .article-content,
 [data-font='kai'] .article-content,
-[data-font='wenkai'] .article-content,
-[data-font='xiaolai'] .article-content {
+[data-font='wenkai'] .article-content {
   font-size: 15.5px;
   line-height: 2.06;
   letter-spacing: 0.01em;
 }
 
-/* 系统宋/楷没有粗体字重，靠合成；手写体本身笔画细，压到 500 */
-[data-font='serif'] .article-content,
+/* 400 太细、600 太笨，取中间 */
 [data-font='kai'] .article-content {
-  font-weight: 600;
+  font-weight: 500;
 }
 
-[data-font='wenkai'] .article-content,
-[data-font='xiaolai'] .article-content {
+[data-font='wenkai'] .article-content {
   font-weight: 500;
 }
 
@@ -3157,3 +3143,106 @@ button {
   }
 }
 
+
+/* ============================ 写作页：文章模式 ============================ */
+.write-tabs {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  margin-bottom: 16px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.write-tab {
+  padding: 7px 18px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  color: var(--text-3);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.write-tab.active {
+  background: var(--card);
+  color: var(--text);
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.icon-btn.accent {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.icon-btn.accent:hover {
+  background: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.pe-meta {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pe-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pe-tool-label {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.pe-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.pe-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text-2);
+  font-size: 12px;
+  transition: all 0.16s var(--ease);
+}
+
+.pe-tool:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.pe-tool.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.pe-body {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.95;
+}
+
+.pe-preview {
+  min-height: 340px;
+  padding: 16px 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.pe-preview p:last-child {
+  margin-bottom: 0;
+}
