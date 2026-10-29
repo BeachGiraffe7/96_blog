@@ -3444,3 +3444,287 @@ button {
   white-space: nowrap;
   animation: themePanelIn 0.16s var(--ease);
 }
+
+/* ============================ 文章目录 ============================ */
+.toc-card {
+  position: sticky;
+  top: 86px;
+  padding: 15px 14px 13px;
+}
+
+.toc-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.toc-title svg {
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.toc-nav {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.toc-link {
+  display: block;
+  padding: 5px 8px 5px 10px;
+  border-left: 2px solid var(--line);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.toc-link:hover {
+  color: var(--text);
+  border-left-color: var(--line-strong);
+}
+
+.toc-link.level-3 {
+  padding-left: 22px;
+  font-size: 12px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.toc-link.active {
+  border-left-color: var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 500;
+}
+
+/* 锚点跳转时别被固定头部挡住 */
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  scroll-margin-top: 88px;
+}
+
+/* ============================ 文章目录 ============================ */
+.toc-card {
+  position: sticky;
+  top: 86px;
+  padding: 15px 14px 13px;
+}
+
+.toc-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.toc-title svg {
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.toc-nav {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.toc-link {
+  display: block;
+  padding: 5px 8px 5px 10px;
+  border-left: 2px solid var(--line);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.toc-link:hover {
+  color: var(--text);
+  border-left-color: var(--line-strong);
+}
+
+.toc-link.level-3 {
+  padding-left: 22px;
+  font-size: 12px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.toc-link.active {
+  border-left-color: var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 500;
+}
+
+/* 锚点跳转时别被固定头部挡住 */
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  scroll-margin-top: 88px;
+}
+
+/* 窄屏内嵌目录：宽屏有右栏卡片，这块就不需要了 */
+.toc-inline {
+  display: none;
+}
+
+.toc-inline summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.toc-inline summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc-inline summary svg {
+  color: var(--accent);
+}
+
+.toc-inline summary::after {
+  content: '';
+  margin-left: auto;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--text-3);
+  border-bottom: 1.5px solid var(--text-3);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.18s var(--ease);
+}
+
+.toc-inline[open] summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.toc-inline-nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  padding: 6px 4px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.toc-inline .toc-link {
+  flex: none;
+  white-space: normal;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+@media (max-width: 1440px) {
+  .toc-inline {
+    display: block;
+    margin-bottom: 22px;
+  }
+}
+
+/* 窄屏内嵌目录：宽屏有右栏卡片，这块就不需要了 */
+.toc-inline {
+  display: none;
+}
+
+.toc-inline summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.toc-inline summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc-inline summary svg {
+  color: var(--accent);
+}
+
+.toc-inline summary::after {
+  content: '';
+  margin-left: auto;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--text-3);
+  border-bottom: 1.5px solid var(--text-3);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.18s var(--ease);
+}
+
+.toc-inline[open] summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.toc-inline-nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  padding: 6px 4px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.toc-inline .toc-link {
+  flex: none;
+  white-space: normal;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+@media (max-width: 1440px) {
+  .toc-inline {
+    display: block;
+    margin-bottom: 22px;
+  }
+}

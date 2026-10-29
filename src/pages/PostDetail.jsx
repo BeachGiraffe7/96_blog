@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { posts, categories, formatNumber, readingTime, site } from '../data/posts'
 import { loadBody } from '../data/bodies'
 import { Icon } from '../components/Icons'
 import Markdown from '../components/Markdown'
+import { TocContext } from '../components/tocContext'
+import { buildToc } from '../lib/toc'
 
 export default function PostDetail() {
   const { slug } = useParams()
@@ -13,6 +15,7 @@ export default function PostDetail() {
   // 正文单独按需加载（每篇 md 是一个独立 chunk）
   const [body, setBody] = useState('')
   const [loading, setLoading] = useState(false)
+  const setToc = useContext(TocContext)
 
   useEffect(() => {
     if (!post?.hasBody) {
@@ -31,6 +34,21 @@ export default function PostDetail() {
       alive = false
     }
   }, [post?.slug, post?.hasBody])
+
+  // 目录：宽屏交给右栏卡片，窄屏用正文上方这块折叠目录（同一份数据）
+  const [toc, setLocalToc] = useState([])
+
+  useEffect(() => {
+    if (!body) {
+      setLocalToc([])
+      setToc(null)
+      return undefined
+    }
+    const items = buildToc(body)
+    setLocalToc(items)
+    setToc(items)
+    return () => setToc(null)
+  }, [body, setToc])
 
   if (!post) {
     return (
@@ -92,6 +110,28 @@ export default function PostDetail() {
         </div>
 
         <div className="article-divider" />
+
+        {/* 窄屏（右栏隐藏时）用的折叠目录 */}
+        {toc.length > 1 && (
+          <details className="toc-inline">
+            <summary>
+              <Icon.text />
+              本页目录 · {toc.length} 节
+            </summary>
+            <nav className="toc-inline-nav">
+              {toc.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={`toc-link level-${item.level}`}
+                  title={item.text}
+                >
+                  {item.text}
+                </a>
+              ))}
+            </nav>
+          </details>
+        )}
 
         <div className="article-content">
           {post.hasBody ? (

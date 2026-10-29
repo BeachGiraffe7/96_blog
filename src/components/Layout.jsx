@@ -1,21 +1,28 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Outlet, useLocation, Link } from 'react-router-dom'
 import Header from './Header'
 import { CategoryCard, ProfileCard, SeriesCard } from './Sidebar'
 import { AboutMiniCard, MomentsCard, StatsCard, TagsCard } from './RightRail'
+import TocCard from './TocCard'
+import { TocContext } from './tocContext'
 import { Icon } from './Icons'
 import { site } from '../data/posts'
 
+
 export default function Layout({ query, onQueryChange }) {
   const { pathname } = useLocation()
+  const [toc, setToc] = useState(null)
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
+    // 换页先清空，避免上一篇文章的目录残留
+    setToc(null)
   }, [pathname])
 
   return (
-    <div className="app">
-      <Header query={query} onQueryChange={onQueryChange} />
+    <TocContext.Provider value={setToc}>
+      <div className="app">
+        <Header query={query} onQueryChange={onQueryChange} />
 
       <main className="shell">
         <aside className="col-left">
@@ -38,10 +45,16 @@ export default function Layout({ query, onQueryChange }) {
         </div>
 
         <aside className="col-right">
-          <StatsCard />
-          <MomentsCard />
-          <TagsCard />
-          <AboutMiniCard />
+          {toc && toc.length > 0 ? (
+            <TocCard items={toc} />
+          ) : (
+            <>
+              <StatsCard />
+              <MomentsCard />
+              <TagsCard />
+              <AboutMiniCard />
+            </>
+          )}
         </aside>
       </main>
 
@@ -72,8 +85,9 @@ export default function Layout({ query, onQueryChange }) {
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <Icon.arrowUp />
-      </button>
-    </div>
+        </button>
+      </div>
+    </TocContext.Provider>
   )
 }
 

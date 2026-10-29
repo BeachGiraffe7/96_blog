@@ -4,6 +4,8 @@
  *       表格、图片、分隔线、行内代码、加粗、斜体、链接
  */
 
+import { makeIdGen } from '../lib/toc'
+
 function renderInline(text, keyPrefix) {
   // 顺序：行内代码 -> 链接/图片在块级处理，这里只处理强调和行内代码
   const nodes = []
@@ -84,6 +86,7 @@ export default function Markdown({ source, skipH1 = true }) {
   const out = []
   let i = 0
   let key = 0
+  const nextId = makeIdGen()
 
   const flushList = (ordered) => {
     const items = []
@@ -135,10 +138,11 @@ export default function Markdown({ source, skipH1 = true }) {
         continue
       }
       const content = renderInline(text, `h${key}`)
-      if (level === 1) out.push(<h1 key={`k${key++}`}>{content}</h1>)
-      else if (level === 2) out.push(<h2 key={`k${key++}`}>{content}</h2>)
-      else if (level === 3) out.push(<h3 key={`k${key++}`}>{content}</h3>)
-      else out.push(<h4 key={`k${key++}`}>{content}</h4>)
+      const id = nextId(text)
+      if (level === 1) out.push(<h1 key={`k${key++}`} id={id}>{content}</h1>)
+      else if (level === 2) out.push(<h2 key={`k${key++}`} id={id}>{content}</h2>)
+      else if (level === 3) out.push(<h3 key={`k${key++}`} id={id}>{content}</h3>)
+      else out.push(<h4 key={`k${key++}`} id={id}>{content}</h4>)
       i++
       continue
     }

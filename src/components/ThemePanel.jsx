@@ -19,7 +19,7 @@ const THEME_ICON = {
   auto: Icon.refresh,
 }
 
-export default function ThemePanel({ onClose, onModeChange }) {
+export default function ThemePanel({ onClose }) {
   const [theme, setThemeState] = useState(getTheme())
   const [font, setFontState] = useState(getFont())
   const [palette, setPaletteState] = useState(getPalette())
@@ -60,7 +60,7 @@ export default function ThemePanel({ onClose, onModeChange }) {
                 aria-pressed={active}
                 onClick={() => {
                   setThemeState(t.id)
-                  onModeChange?.(setTheme(t.id))
+                  setTheme(t.id)
                 }}
               >
                 <Glyph />
