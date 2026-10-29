@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from './Icons'
+import ThemePanel from './ThemePanel'
 import { site } from '../data/posts'
+import { applyTheme, setTheme, watchSystem } from '../lib/theme'
 
 const nav = [
   { to: '/', label: '主页', end: true },
@@ -15,6 +17,8 @@ const nav = [
 
 export default function Header({ query, onQueryChange }) {
   const [open, setOpen] = useState(false)
+  const [panel, setPanel] = useState(false)
+  const [mode, setMode] = useState('light')
   const inputRef = useRef(null)
   const navigate = useNavigate()
 
@@ -22,9 +26,19 @@ export default function Header({ query, onQueryChange }) {
     if (open) inputRef.current?.focus()
   }, [open])
 
+  useEffect(() => {
+    setMode(applyTheme())
+    return watchSystem(setMode)
+  }, [])
+
   const submit = (e) => {
     e.preventDefault()
     navigate(query ? `/?q=${encodeURIComponent(query)}` : '/')
+  }
+
+  const toggleTheme = () => {
+    setPanel(false)
+    setMode(setTheme(mode === 'dark' ? 'light' : 'dark'))
   }
 
   return (
@@ -66,12 +80,31 @@ export default function Header({ query, onQueryChange }) {
               <Icon.search />
             </button>
           </form>
-          <button type="button" className="icon-btn" aria-label="主题">
-            <Icon.sun />
+
+          <button
+            type="button"
+            className="icon-btn theme-toggle"
+            onClick={toggleTheme}
+            aria-label={mode === 'dark' ? '切换到浅色' : '切换到深色'}
+            title={mode === 'dark' ? '切换到浅色' : '切换到深色'}
+          >
+            {mode === 'dark' ? <Icon.sun /> : <Icon.moon />}
           </button>
-          <button type="button" className="icon-btn" aria-label="设置">
+
+          <button
+            type="button"
+            className={panel ? 'icon-btn theme-toggle active' : 'icon-btn theme-toggle'}
+            onClick={() => setPanel((v) => !v)}
+            aria-label="外观设置"
+            aria-expanded={panel}
+            title="外观设置"
+          >
             <Icon.settings />
           </button>
+
+          {panel && (
+            <ThemePanel onClose={() => setPanel(false)} onModeChange={setMode} />
+          )}
         </div>
       </div>
     </header>

@@ -56,15 +56,15 @@ function cardSvg({ brand, title, slogan, chip, meta, host }) {
     ? lines
         .map(
           (l, i) =>
-            `<text x="88" y="${268 + i * 84}" font-size="58" font-weight="700" fill="#2f2429">${esc(l)}</text>`,
+            `<text x="88" y="${268 + i * 84}" font-size="58" font-weight="700" fill="#263445">${esc(l)}</text>`,
         )
         .join('')
-    : `<text x="88" y="286" font-size="88" font-weight="700" fill="#2f2429">${esc(slogan || '')}</text>`
+    : `<text x="88" y="286" font-size="88" font-weight="700" fill="#263445">${esc(slogan || '')}</text>`
 
   const chipWidth = chip ? 26 + textWidth(chip) * 24 : 0
   const chipEl = chip
     ? `<rect x="88" y="486" width="${chipWidth}" height="46" rx="23" fill="#ffffff" fill-opacity="0.72"/>
-       <text x="${88 + chipWidth / 2}" y="518" text-anchor="middle" font-size="24" fill="#b3547a">${esc(chip)}</text>`
+       <text x="${88 + chipWidth / 2}" y="518" text-anchor="middle" font-size="24" fill="#2a5578">${esc(chip)}</text>`
     : ''
   const metaX = chip ? 88 + chipWidth + 22 : 88
 
@@ -72,12 +72,12 @@ function cardSvg({ brand, title, slogan, chip, meta, host }) {
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="38%" stop-color="#fdeef3"/>
-      <stop offset="72%" stop-color="#f4d9e7"/>
-      <stop offset="100%" stop-color="#ded2f2"/>
+      <stop offset="38%" stop-color="#eef3f8"/>
+      <stop offset="72%" stop-color="#dbe6f0"/>
+      <stop offset="100%" stop-color="#cfdae8"/>
     </linearGradient>
     <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1.7" fill="#e6a9c0" fill-opacity="0.35"/>
+      <circle cx="2" cy="2" r="1.7" fill="#9db8d0" fill-opacity="0.35"/>
     </pattern>
     <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
@@ -89,13 +89,13 @@ function cardSvg({ brand, title, slogan, chip, meta, host }) {
   <rect width="1200" height="630" fill="url(#dots)"/>
   <circle cx="1030" cy="520" r="330" fill="url(#glow)"/>
 
-  <rect x="88" y="78" width="5" height="26" rx="2.5" fill="#e0718f"/>
-  <text x="106" y="100" font-size="26" fill="#8a6a78" letter-spacing="1">${esc(brand)}</text>
+  <rect x="88" y="78" width="5" height="26" rx="2.5" fill="#356a9a"/>
+  <text x="106" y="100" font-size="26" fill="#4a5c6e" letter-spacing="1">${esc(brand)}</text>
 
   ${titleBlock}
   ${chipEl}
-  <text x="${metaX}" y="518" font-size="24" fill="#9b8d94">${esc(meta || '')}</text>
-  <text x="1112" y="588" text-anchor="end" font-size="20" fill="#b9a3ae" fill-opacity="0.9">${esc(host)}</text>
+  <text x="${metaX}" y="518" font-size="24" fill="#76879a">${esc(meta || '')}</text>
+  <text x="1112" y="588" text-anchor="end" font-size="20" fill="#9aabb9" fill-opacity="0.9">${esc(host)}</text>
 </svg>`
 }
 

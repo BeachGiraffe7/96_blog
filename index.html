@@ -8,7 +8,24 @@
     <title>海滩长颈鹿 · 失之东隅，收之桑榆</title>
 
     <link rel="alternate" type="application/rss+xml" title="海滩长颈鹿" href="/feed.xml" />
-    <meta name="theme-color" content="#fdf4f6" />
+    <meta name="theme-color" content="#f4f6f8" />
+
+    <!-- 主题/字体在首屏渲染前定好，避免闪白 -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('blog_theme') || 'auto'
+          var dark =
+            t === 'dark' ||
+            (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.dataset.theme = 'dark'
+          var f = localStorage.getItem('blog_font')
+          if (f && f !== 'sans') document.documentElement.dataset.font = f
+          var m = document.querySelector('meta[name="theme-color"]')
+          if (m) m.setAttribute('content', dark ? '#1b1a1e' : '#f4f6f8')
+        } catch (e) {}
+      })()
+    </script>
 
     <!-- SEO 占位：构建时由 scripts/seo.mjs 替换为各页面的 meta -->
     <!--seo-->
