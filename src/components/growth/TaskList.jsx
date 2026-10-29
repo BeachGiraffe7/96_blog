@@ -7,12 +7,10 @@ export default function TaskList({ tasks, onChange, readOnly }) {
   const add = () => {
     const text = draft.trim()
     if (!text) return
-    const today = new Date()
-    const dateKey = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(
-      today.getDate(),
-    ).padStart(2, '0')}`
-    const seq = tasks.length + 1
-    onChange([...tasks, { id: `t_${dateKey}_${seq}`, text, done: false }])
+    // 用时间戳而不是「当前条数 + 1」：删掉中间一条后再加会产生重复 id，
+    // 重复 id 会让 React 的 key 冲突，勾选会串行
+    const id = `t_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+    onChange([...tasks, { id, text, done: false }])
     setDraft('')
   }
 
