@@ -31,14 +31,43 @@ export const site = {
 
 // 分类
 export const categories = [
-  { name: '嵌入式', letter: '嵌', color: '#7cc7b2' },
-  { name: '技术', letter: '技', color: '#a9b8f0' },
-  { name: '阅读', letter: '阅', color: '#c9aee8' },
-  { name: '生活随记', letter: '生', color: '#f0a7a7' },
+  { name: '编程基础', letter: '码', color: '#a9b8f0', desc: '语言、工具链与工程习惯' },
+  { name: '嵌入式', letter: '嵌', color: '#7cc7b2', desc: '单片机、RTOS 与电赛' },
+  { name: '机器人', letter: '机', color: '#e8b07a', desc: '运动学、ROS 2、仿真与感知' },
+  { name: '智能算法', letter: '智', color: '#c9aee8', desc: '从机器学习到 VLA' },
+  { name: '记录', letter: '记', color: '#f0a7a7', desc: '碎碎念、复盘与心得' },
 ]
 
 export const series = [
-  { name: 'TI M0 课程笔记', desc: '电赛特训：米醋电子 TI M0 系列课程', icon: 'code' },
+  // 编程基础
+  { name: 'C 语言基础', category: '编程基础', desc: '语法、流程、数组与函数', icon: 'code' },
+  { name: 'C 语言高级', category: '编程基础', desc: '指针、内存与结构体', icon: 'code' },
+  { name: 'Python', category: '编程基础', desc: '脚本、数据处理与自动化', icon: 'code' },
+  { name: 'Linux 与命令行', category: '编程基础', desc: '每天都要用的那些命令', icon: 'target' },
+  { name: '工具与工程', category: '编程基础', desc: 'Git、构建、部署这些杂事', icon: 'folder' },
+  { name: '读书笔记', category: '编程基础', desc: '读完一本记一篇', icon: 'book' },
+
+  // 嵌入式
+  { name: 'STM32 裸机', category: '嵌入式', desc: '寄存器、外设与调试', icon: 'code' },
+  { name: '电赛·TI M0', category: '嵌入式', desc: '米醋电子 TI M0 系列课程', icon: 'layers' },
+  { name: 'FreeRTOS', category: '嵌入式', desc: '任务、队列与调度', icon: 'clock' },
+
+  // 机器人
+  { name: '机器人学', category: '机器人', desc: '变换、运动学与轨迹规划', icon: 'target' },
+  { name: 'ROS 2', category: '机器人', desc: '节点、话题、服务与 Action', icon: 'layers' },
+  { name: '机器人仿真', category: '机器人', desc: 'MuJoCo 与 Isaac', icon: 'chart' },
+  { name: '机械臂', category: '机器人', desc: '正逆解、抓取与力控', icon: 'code' },
+  { name: '机器视觉', category: '机器人', desc: '标定、检测与位姿估计', icon: 'eye' },
+
+  // 智能算法
+  { name: '机器学习', category: '智能算法', desc: '基础概念与经典模型', icon: 'chart' },
+  { name: '深度学习', category: '智能算法', desc: 'Transformer 与扩散模型', icon: 'chart' },
+  { name: '强化学习', category: '智能算法', desc: 'PPO、SAC 与 Sim2Real', icon: 'target' },
+  { name: '模仿学习与 VLA', category: '智能算法', desc: 'ACT、Diffusion Policy、OpenVLA', icon: 'spark' },
+
+  // 记录
+  { name: '周复盘', category: '记录', desc: '一周一次的自查', icon: 'calendar' },
+  { name: '项目复盘', category: '记录', desc: '做完一个东西之后的总结', icon: 'book' },
 ]
 
 // 碎碎念：内容写在 src/content/moments.md，格式是「## 日期 | 心情」+ 正文
@@ -66,7 +95,7 @@ const staticPosts = [
     date: '2026-06-20',
     views: 312,
     tags: ['TI M0', '电赛', 'BSL'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 1278,
     cover: 'grid',
@@ -80,7 +109,7 @@ const staticPosts = [
     date: '2026-07-05',
     views: 486,
     tags: ['TI M0', 'DL库', 'GPIO', '时钟'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 9365,
     cover: 'grid',
@@ -94,7 +123,7 @@ const staticPosts = [
     date: '2026-07-12',
     views: 521,
     tags: ['TI M0', 'UART', 'DMA', 'Ringbuffer'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 11527,
     excerpt:
@@ -107,7 +136,7 @@ const staticPosts = [
     date: '2026-07-14',
     views: 468,
     tags: ['TI M0', 'ADC', 'DAC', 'Timer'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 24384,
     cover: 'wave',
@@ -121,7 +150,7 @@ const staticPosts = [
     date: '2026-07-18',
     views: 394,
     tags: ['TI M0', '传感器', 'ADC', '灰度'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 5161,
     excerpt:
@@ -134,7 +163,7 @@ const staticPosts = [
     date: '2026-07-25',
     views: 437,
     tags: ['TI M0', 'PWM', '电机', 'DRV8871'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 11073,
     excerpt:
@@ -147,7 +176,7 @@ const staticPosts = [
     date: '2026-08-02',
     views: 562,
     tags: ['TI M0', 'PID', '控制', 'JY901S'],
-    series: 'TI M0 课程笔记',
+    series: '电赛·TI M0',
     hasBody: true,
     words: 4441,
     cover: 'aurora',
@@ -159,7 +188,8 @@ const staticPosts = [
   {
     slug: 'git-github-desktop',
     title: '【教程】Git、GitHub、GitHub Desktop 到底谁是谁',
-    category: '技术',
+    category: '编程基础',
+    series: '工具与工程',
     date: '2026-10-28',
     views: 96,
     tags: ['Git', 'GitHub', '部署', '教程'],
@@ -172,7 +202,7 @@ const staticPosts = [
   {
     slug: 'ai-coding',
     title: '【观点】正确使用 AI Coding',
-    category: '技术',
+    category: '编程基础',
     date: '2026-10-25',
     views: 3242,
     words: 1032,
@@ -193,7 +223,8 @@ const staticPosts = [
   {
     slug: 'vite-speed',
     title: '【技术】把本地热更新从 3 秒压到 0.3 秒',
-    category: '技术',
+    category: '编程基础',
+    series: '工具与工程',
     date: '2026-08-15',
     views: 2210,
     words: 1240,
@@ -211,7 +242,8 @@ const staticPosts = [
   {
     slug: 'rss-note',
     title: '【技术】给博客接上 RSS 的半小时',
-    category: '技术',
+    category: '编程基础',
+    series: '工具与工程',
     date: '2026-04-28',
     views: 412,
     words: 720,
@@ -228,7 +260,8 @@ const staticPosts = [
   {
     slug: 'clean-code-reread',
     title: '【阅读】《代码整洁之道》重读：十年后再看',
-    category: '阅读',
+    category: '编程基础',
+    series: '读书笔记',
     date: '2026-03-20',
     views: 601,
     words: 1130,
@@ -247,7 +280,7 @@ const staticPosts = [
   {
     slug: '3am-bug',
     title: '【随记】凌晨三点的 bug 和一杯凉掉的咖啡',
-    category: '生活随记',
+    category: '记录',
     date: '2026-08-21',
     views: 389,
     words: 540,
@@ -263,7 +296,7 @@ const staticPosts = [
   {
     slug: 'october-note',
     title: '【随记】十月：把时间花在能积累的事情上',
-    category: '生活随记',
+    category: '记录',
     date: '2026-08-02',
     views: 341,
     words: 726,
@@ -279,7 +312,7 @@ const staticPosts = [
   {
     slug: 'why-blog',
     title: '【随记】为什么我要开始写博客',
-    category: '生活随记',
+    category: '记录',
     date: '2026-02-26',
     views: 468,
     words: 880,
@@ -312,6 +345,19 @@ export const categoryCount = (name) => posts.filter((p) => p.category === name).
 
 export const seriesCount = (name) => posts.filter((p) => p.series === name).length
 
+// 只列有文章的系列：计划里的空系列不进导航，否则一开始就是一排 0
+export const activeSeries = () => series.filter((s) => seriesCount(s.name) > 0)
+
+// 某个分类下、已有文章的系列
+export const seriesInCategory = (cat) =>
+  series.filter((s) => s.category === cat && seriesCount(s.name) > 0)
+
+export const seriesMeta = (name) => series.find((s) => s.name === name)
+
+// 系列内的文章，按时间正序（课程是第一讲 → 第 N 讲，倒序读会乱）
+export const postsInSeries = (name) =>
+  posts.filter((p) => p.series === name).sort((a, b) => a.date.localeCompare(b.date))
+
 export const allTags = () => {
   const map = new Map()
   posts.forEach((p) => p.tags.forEach((t) => map.set(t, (map.get(t) || 0) + 1)))
@@ -330,7 +376,7 @@ export const stats = () => {
     posts: posts.length,
     categories: categories.length,
     tags: allTags().length,
-    series: series.length,
+    series: activeSeries().length,
     words: totalWords,
     views: totalViews,
     days,

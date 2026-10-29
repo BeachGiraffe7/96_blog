@@ -1,16 +1,21 @@
 import { Link } from 'react-router-dom'
 import { PageHead } from '../components/Layout'
-import { posts, categories, series, seriesCount } from '../data/posts'
+import { posts, categories, seriesInCategory, seriesCount } from '../data/posts'
 import { Icon } from '../components/Icons'
 
 export default function Categories() {
   return (
     <div className="feed">
-      <PageHead title="分类" desc="按主题归类，方便回头翻。" count={categories.length} />
+      <PageHead
+        title="分类"
+        desc="五个方向。每个方向下的系列，是一段段按时间积累的学习记录。"
+        count={categories.length}
+      />
 
       <div className="cat-grid">
         {categories.map((c) => {
           const items = posts.filter((p) => p.category === c.name)
+          const subs = seriesInCategory(c.name)
           return (
             <section key={c.name} className="card cat-card">
               <div className="cat-card-head">
@@ -19,45 +24,37 @@ export default function Categories() {
                 </span>
                 <div>
                   <h3>{c.name}</h3>
-                  <p>{items.length} 篇文章</p>
+                  <p>{c.desc}</p>
                 </div>
               </div>
-              <ul className="cat-card-list">
-                {items.slice(0, 3).map((p) => (
-                  <li key={p.slug}>
-                    <Link to={`/post/${p.slug}`}>{p.title}</Link>
-                  </li>
-                ))}
-                {items.length === 0 && <li className="empty-line">还没有文章</li>}
-              </ul>
-              <Link to={`/category/${encodeURIComponent(c.name)}`} className="cat-card-more">
-                查看全部 ›
-              </Link>
-            </section>
-          )
-        })}
-      </div>
 
-      <div className="list-head mt">
-        <span className="side-card-bar" />
-        <h2>系列</h2>
-        <span className="list-head-count">共 {series.length} 个</span>
-      </div>
+              {subs.length > 0 ? (
+                <div className="cat-series">
+                  {subs.map((s) => (
+                    <Link
+                      key={s.name}
+                      to={`/series/${encodeURIComponent(s.name)}`}
+                      className="series-chip"
+                    >
+                      <Icon.layers />
+                      {s.name}
+                      <span className="series-chip-count">{seriesCount(s.name)}</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : items.length === 0 ? (
+                <p className="cat-empty-line">这个方向还没开始写</p>
+              ) : (
+                <p className="cat-empty-line">这些文章暂时没有归入系列</p>
+              )}
 
-      <div className="series-grid">
-        {series.map((s) => {
-          const Ico = Icon[s.icon] || Icon.layers
-          return (
-            <div key={s.name} className="card series-card-lg">
-              <span className="series-icon lg">
-                <Ico />
-              </span>
-              <div>
-                <h3>{s.name}</h3>
-                <p>{s.desc}</p>
+              <div className="cat-card-foot">
+                <span className="cat-card-count">{items.length} 篇文章</span>
+                <Link to={`/category/${encodeURIComponent(c.name)}`} className="cat-card-more">
+                  查看全部 ›
+                </Link>
               </div>
-              <span className="count-badge">{seriesCount(s.name)}</span>
-            </div>
+            </section>
           )
         })}
       </div>

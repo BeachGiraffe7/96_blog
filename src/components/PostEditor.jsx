@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { categories, site } from '../data/posts'
+import { categories, series, site } from '../data/posts'
 import { readFile, writeFile } from '../lib/github'
 import { htmlToMarkdown, looksRich } from '../lib/htmlToMarkdown'
 import Markdown from './Markdown'
@@ -49,7 +49,8 @@ export default function PostEditor({ token, onPublished }) {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
-  const [category, setCategory] = useState(categories[0]?.name || '技术')
+  const [category, setCategory] = useState(categories[0]?.name || '编程基础')
+  const [seriesName, setSeriesName] = useState('')
   const [tagText, setTagText] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [body, setBody] = useState('')
@@ -70,6 +71,9 @@ export default function PostEditor({ token, onPublished }) {
     .filter(Boolean)
 
   const words = body.replace(/\s/g, '').length
+  // 只列当前分类下的系列，避免选到跨分类的组合
+  const seriesOptions = series.filter((x) => x.category === category)
+
   const ready = title.trim() && body.trim() && slug.trim() && !publishing
 
   const insert = (text) => {
@@ -147,6 +151,7 @@ export default function PostEditor({ token, onPublished }) {
         slug,
         title: title.trim(),
         category,
+        ...(seriesName ? { series: seriesName } : {}),
         date: today(),
         views: 0,
         words,
@@ -213,7 +218,10 @@ export default function PostEditor({ token, onPublished }) {
               <select
                 className="write-input"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value)
+                  setSeriesName('')
+                }}
               >
                 {categories.map((c) => (
                   <option key={c.name} value={c.name}>
@@ -222,6 +230,24 @@ export default function PostEditor({ token, onPublished }) {
                 ))}
               </select>
             </label>
+            <label className="write-label">
+              系列（可选）
+              <select
+                className="write-input"
+                value={seriesName}
+                onChange={(e) => setSeriesName(e.target.value)}
+              >
+                <option value="">不归入系列</option>
+                {seriesOptions.map((x) => (
+                  <option key={x.name} value={x.name}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="write-row">
             <label className="write-label">
               网址尾段
               <input

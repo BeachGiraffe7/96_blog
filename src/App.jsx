@@ -14,6 +14,7 @@ const Moments = lazy(() => import('./pages/Moments'))
 const Write = lazy(() => import('./pages/Write'))
 const Growth = lazy(() => import('./pages/Growth'))
 const PostDetail = lazy(() => import('./pages/PostDetail'))
+const SeriesPage = lazy(() => import('./pages/Series'))
 
 function NotFound() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/category/:name" element={<Home mode="category" />} />
             <Route path="/tag/:name" element={<Home mode="tag" />} />
+            <Route path="/series/:name" element={<SeriesPage />} />
             <Route path="/archive" element={<Archive />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/tags" element={<Tags />} />

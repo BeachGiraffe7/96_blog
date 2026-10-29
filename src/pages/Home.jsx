@@ -1,6 +1,6 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import PostCard from '../components/PostCard'
-import { posts, categories } from '../data/posts'
+import { posts, categories, seriesInCategory, seriesCount } from '../data/posts'
 import { Icon } from '../components/Icons'
 
 // mode: 'all' 首页 | 'category' 分类 | 'tag' 标签
@@ -19,6 +19,8 @@ export default function Home({ mode = 'all' }) {
 
   const filtered = Boolean((name && mode !== 'all') || q)
   const cat = mode === 'category' && name ? categories.find((c) => c.name === name) : null
+  // 分类页顶部列出这个方向下的系列，等于「分类 → 系列」的第二层入口
+  const subs = mode === 'category' && name ? seriesInCategory(name) : []
 
   const label = cat
     ? `分类：${cat.name}`
@@ -48,6 +50,23 @@ export default function Home({ mode = 'all' }) {
           <span className="side-card-bar" />
           <h2>最新文章</h2>
           <span className="list-head-count">共 {posts.length} 篇</span>
+        </div>
+      )}
+
+      {subs.length > 0 && (
+        <div className="series-strip">
+          <span className="series-strip-label">系列</span>
+          {subs.map((s) => (
+            <Link
+              key={s.name}
+              to={`/series/${encodeURIComponent(s.name)}`}
+              className="series-chip"
+            >
+              <Icon.layers />
+              {s.name}
+              <span className="series-chip-count">{seriesCount(s.name)}</span>
+            </Link>
+          ))}
         </div>
       )}
 

@@ -111,7 +111,7 @@ async function main() {
   const mod = await server.ssrLoadModule('/src/data/posts.js')
   await server.close()
 
-  const { posts, categories, site, moments, allTags } = mod
+  const { posts, categories, site, moments, allTags, series = [], seriesCount = () => 0 } = mod
   // 站点按时间倒序展示，feed / sitemap 也保持一致
   const newest = [...posts].sort((a, b) => b.date.localeCompare(a.date))
   const base = (process.env.SITE_URL || site.siteUrl || 'https://96-blog.pages.dev').replace(/\/$/, '')
@@ -261,6 +261,25 @@ async function main() {
     }))
   }
 
+  // 系列页：只给有文章的系列生成，空系列不占收录位
+  const liveSeries = series.filter((x) => seriesCount(x.name) > 0)
+  for (const x of liveSeries) {
+    const count = seriesCount(x.name)
+    const urlPath = `series/${encodeURIComponent(x.name)}`
+    await writePage(`series/${x.name}`, build(urlPath, {
+      title: `${x.name} · ${site.name}`,
+      description: `${x.desc}（${count} 篇）`,
+      url: `${base}/${urlPath}`,
+      image: `${base}/og/default.png`,
+      extra: jsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: `${x.name} · ${site.name}`,
+        url: `${base}/${urlPath}`,
+      }),
+    }))
+  }
+
   // 标签页
   const tags = allTags()
   for (const t of tags) {
@@ -308,6 +327,7 @@ async function main() {
     { loc: `${base}/tags` },
     { loc: `${base}/about` },
     ...categories.map((c) => ({ loc: `${base}/category/${encodeURIComponent(c.name)}` })),
+    ...liveSeries.map((x) => ({ loc: `${base}/series/${encodeURIComponent(x.name)}` })),
     ...tags.map((t) => ({ loc: `${base}/tag/${encodeURIComponent(t.name)}` })),
   ]
 
@@ -359,7 +379,7 @@ ${newest
 
   console.log(
     `[seo] 生成 ${posts.length + 1} 张封面、${urls.length} 条 sitemap、feed.xml、robots.txt、${
-      posts.length + pages.length + categories.length + tags.length + 3
+      posts.length + pages.length + categories.length + tags.length + liveSeries.length + 3
     } 个页面 meta`,
   )
 }

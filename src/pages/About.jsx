@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { PageHead } from '../components/Layout'
-import { posts, series, site, stats, timeline, moments } from '../data/posts'
+import { posts, activeSeries, site, stats, timeline, moments } from '../data/posts'
 import { Icon } from '../components/Icons'
 
 export default function About() {
@@ -80,7 +80,7 @@ export default function About() {
               <span>运行天数</span>
             </div>
             <div>
-              <strong>{series.length}</strong>
+              <strong>{activeSeries().length}</strong>
               <span>系列</span>
             </div>
           </div>

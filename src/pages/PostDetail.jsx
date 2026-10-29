@@ -1,6 +1,13 @@
 import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { posts, categories, formatNumber, readingTime, site } from '../data/posts'
+import {
+  posts,
+  categories,
+  postsInSeries,
+  formatNumber,
+  readingTime,
+  site,
+} from '../data/posts'
 import { loadBody } from '../data/bodies'
 import { Icon } from '../components/Icons'
 import Markdown from '../components/Markdown'
@@ -62,8 +69,13 @@ export default function PostDetail() {
   }
 
   const cat = categories.find((c) => c.name === post.category)
-  const prev = posts[idx + 1]
-  const next = posts[idx - 1]
+  // 属于某个系列时，底部导航走系列内顺序（第 N 讲 → 第 N+1 讲），
+  // 否则按全站时间线走
+  const siblings = post.series ? postsInSeries(post.series) : []
+  const inSeries = siblings.findIndex((p) => p.slug === post.slug)
+  const useSeries = inSeries >= 0 && siblings.length > 1
+  const prev = useSeries ? siblings[inSeries - 1] : posts[idx + 1]
+  const next = useSeries ? siblings[inSeries + 1] : posts[idx - 1]
 
   return (
     <article className="article">
@@ -81,10 +93,10 @@ export default function PostDetail() {
             {post.category}
           </Link>
           {post.series && (
-            <span className="post-series">
+            <Link to={`/series/${encodeURIComponent(post.series)}`} className="post-series">
               <Icon.layers />
               {post.series}
-            </span>
+            </Link>
           )}
         </div>
 
@@ -168,7 +180,7 @@ export default function PostDetail() {
       <nav className="article-nav">
         {prev ? (
           <Link to={`/post/${prev.slug}`} className="article-nav-item">
-            <span className="article-nav-label">← 上一篇</span>
+            <span className="article-nav-label">{useSeries ? '← 系列上一篇' : '← 上一篇'}</span>
             <span className="article-nav-title">{prev.title}</span>
           </Link>
         ) : (
@@ -176,7 +188,7 @@ export default function PostDetail() {
         )}
         {next ? (
           <Link to={`/post/${next.slug}`} className="article-nav-item right">
-            <span className="article-nav-label">下一篇 →</span>
+            <span className="article-nav-label">{useSeries ? '系列下一篇 →' : '下一篇 →'}</span>
             <span className="article-nav-title">{next.title}</span>
           </Link>
         ) : (

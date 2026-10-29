@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { posts, categories, site } from '../data/posts'
+import { posts, categories, seriesMeta, site } from '../data/posts'
 
 const setMeta = (name, content) => {
   let el = document.querySelector(`meta[name="${name}"]`)
@@ -57,6 +57,11 @@ export default function RouteMeta() {
       const cat = categories.find((c) => c.name === name)
       title = `${cat ? cat.name : '分类'} · ${site.name}`
       desc = `「${name}」分类下的文章。`
+    } else if (pathname.startsWith('/series/')) {
+      const name = decodeURIComponent(pathname.replace('/series/', ''))
+      const meta = seriesMeta(name)
+      title = `${name} · ${site.name}`
+      desc = meta ? meta.desc : `「${name}」系列下的文章。`
     } else if (pathname.startsWith('/tag/')) {
       const name = decodeURIComponent(pathname.replace('/tag/', ''))
       title = `#${name} · ${site.name}`
