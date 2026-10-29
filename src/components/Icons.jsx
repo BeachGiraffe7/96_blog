@@ -136,6 +136,41 @@ export const Icon = {
       <path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9 12 3.5Z" />
     </svg>
   ),
+  lock: (p) => (
+    <svg {...base} {...p}>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+      <path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" />
+      <circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  check: (p) => (
+    <svg {...base} {...p}>
+      <path d="m5 12.5 4.5 4.5L19 7" />
+    </svg>
+  ),
+  plus: (p) => (
+    <svg {...base} {...p}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  ),
+  trash: (p) => (
+    <svg {...base} {...p}>
+      <path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2a2 2 0 0 0 2 1.8h5.2a2 2 0 0 0 2-1.8L17.5 7" />
+    </svg>
+  ),
+  target: (p) => (
+    <svg {...base} {...p}>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  refresh: (p) => (
+    <svg {...base} {...p}>
+      <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />
+      <path d="M19.8 4.5v4.2h-4.2" />
+    </svg>
+  ),
 }
 
 export const iconBySlug = (slug) => Icon[slug] || Icon.layers

@@ -9,6 +9,7 @@ const nav = [
   { to: '/categories', label: '分类' },
   { to: '/tags', label: '标签' },
   { to: '/moments', label: '碎碎念' },
+  { to: '/growth', label: '成长' },
   { to: '/about', label: '关于' },
 ]
 

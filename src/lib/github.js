@@ -45,8 +45,17 @@ const decodeB64 = (b64) => {
   return new TextDecoder().decode(bytes)
 }
 
-async function handle(res) {
-  if (res.ok) return res.json()
+// 统一超时：网络卡住时不要把界面永久挂在“加载中”
+const TIMEOUT = 15000
+const request = (url, options = {}) => {
+  const opt = { ...options }
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+    opt.signal = AbortSignal.timeout(TIMEOUT)
+  }
+  return fetch(url, opt)
+}
+
+async function handle(res) {  if (res.ok) return res.json()
   let detail = ''
   try {
     const j = await res.json()
@@ -63,14 +72,14 @@ async function handle(res) {
 
 // 校验 token，返回仓库信息
 export async function checkRepo({ repo, token }) {
-  const res = await fetch(`${API}/repos/${repo}`, { headers: headers(token) })
+  const res = await request(`${API}/repos/${repo}`, { headers: headers(token) })
   const data = await handle(res)
   return { fullName: data.full_name, private: data.private }
 }
 
 // 读取文件，返回 { sha, text }；文件不存在返回 null
 export async function readFile({ repo, branch, path, token }) {
-  const res = await fetch(`${API}/repos/${repo}/contents/${path}?ref=${branch}`, {
+  const res = await request(`${API}/repos/${repo}/contents/${path}?ref=${branch}`, {
     headers: headers(token),
   })
   if (res.status === 404) return null
@@ -80,7 +89,7 @@ export async function readFile({ repo, branch, path, token }) {
 
 // 写入文件（带 sha 为更新，不带为新建）
 export async function writeFile({ repo, branch, path, token, text, sha, message }) {
-  const res = await fetch(`${API}/repos/${repo}/contents/${path}`, {
+  const res = await request(`${API}/repos/${repo}/contents/${path}`, {
     method: 'PUT',
     headers: { ...headers(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({

@@ -1,0 +1,1 @@
+{"v":1,"alg":"AES-GCM-256","aad":"growth:daily:v1","kdf":{"name":"PBKDF2","hash":"SHA-256","iter":600000,"salt":"oH4EvqxXldc0XB+KTRh/HQ=="},"iv":"qGcYjLs/lB5USWXa","ct":"oC811kVGmciJ1hwalxClbp5F4Efg6FVZS3ETpjwWMS/q"}

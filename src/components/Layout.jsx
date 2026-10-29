@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation, Link } from 'react-router-dom'
 import Header from './Header'
 import { CategoryCard, ProfileCard, SeriesCard } from './Sidebar'
@@ -25,7 +25,16 @@ export default function Layout({ query, onQueryChange }) {
         </aside>
 
         <div className="col-main">
-          <Outlet />
+          {/* 页面级懒加载的兜底：只替换正文区，侧栏不闪 */}
+          <Suspense
+            fallback={
+              <div className="empty">
+                <p>加载中…</p>
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </div>
 
         <aside className="col-right">
@@ -43,7 +52,14 @@ export default function Layout({ query, onQueryChange }) {
           </span>
           <span className="footer-sep">·</span>
           <span>用手写代码，记录慢慢变好的过程</span>
-          <a className="footer-rss" href="#" aria-label="RSS">
+          <a
+            className="footer-rss"
+            href={`${import.meta.env.BASE_URL}feed.xml`}
+            target="_blank"
+            rel="noreferrer"
+            title="RSS 订阅"
+            aria-label="RSS 订阅"
+          >
             <Icon.rss />
           </a>
         </div>

@@ -3,20 +3,28 @@ import PostCard from '../components/PostCard'
 import { posts, categories } from '../data/posts'
 import { Icon } from '../components/Icons'
 
-export default function Home() {
-  const { name: catName } = useParams()
+// mode: 'all' 首页 | 'category' 分类 | 'tag' 标签
+export default function Home({ mode = 'all' }) {
+  const { name } = useParams()
   const [sp] = useSearchParams()
   const q = (sp.get('q') || '').trim().toLowerCase()
 
   let list = [...posts].sort((a, b) => b.date.localeCompare(a.date))
-  if (catName) list = list.filter((p) => p.category === catName)
+  if (mode === 'category' && name) list = list.filter((p) => p.category === name)
+  if (mode === 'tag' && name) list = list.filter((p) => p.tags.includes(name))
   if (q)
     list = list.filter((p) =>
       [p.title, p.excerpt, p.category, ...p.tags].join(' ').toLowerCase().includes(q),
     )
 
-  const filtered = Boolean(catName || q)
-  const cat = catName ? categories.find((c) => c.name === catName) : null
+  const filtered = Boolean((name && mode !== 'all') || q)
+  const cat = mode === 'category' && name ? categories.find((c) => c.name === name) : null
+
+  const label = cat
+    ? `分类：${cat.name}`
+    : mode === 'tag' && name
+      ? `标签：#${name}`
+      : `搜索：“${sp.get('q')}”`
 
   return (
     <div className="feed">
@@ -28,9 +36,7 @@ export default function Home() {
                 {cat.letter}
               </span>
             )}
-            <span className="filter-banner-text">
-              {cat ? `分类：${cat.name}` : `搜索：“${sp.get('q')}”`}
-            </span>
+            <span className="filter-banner-text">{label}</span>
             <span className="filter-banner-count">{list.length} 篇</span>
           </div>
           <Link to="/" className="filter-clear">
@@ -48,7 +54,7 @@ export default function Home() {
       {list.length === 0 ? (
         <div className="empty">
           <Icon.search />
-          <p>没有找到相关的文章</p>
+          <p>{mode === 'tag' ? '这个标签下还没有文章' : '没有找到相关的文章'}</p>
           <Link to="/" className="empty-link">
             回到全部文章
           </Link>

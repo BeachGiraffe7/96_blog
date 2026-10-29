@@ -70,8 +70,8 @@ export function MomentsCard({ limit = 3 }) {
         <h2>碎碎念</h2>
       </div>
       <ul className="mini-moments">
-        {list.map((m) => (
-          <li key={m.date} className="mini-moment">
+        {list.map((m, i) => (
+          <li key={`${m.date}-${i}`} className="mini-moment">
             <span className="mini-moment-date">{m.date.slice(5)}</span>
             <p className="mini-moment-text">{m.text}</p>
           </li>

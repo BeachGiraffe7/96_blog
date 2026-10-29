@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { posts, categories, formatNumber, readingTime, site } from '../data/posts'
+import { loadBody } from '../data/bodies'
 import { Icon } from '../components/Icons'
 import Markdown from '../components/Markdown'
 
@@ -7,6 +9,28 @@ export default function PostDetail() {
   const { slug } = useParams()
   const idx = posts.findIndex((p) => p.slug === slug)
   const post = posts[idx]
+
+  // 正文单独按需加载（每篇 md 是一个独立 chunk）
+  const [body, setBody] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!post?.hasBody) {
+      setBody('')
+      setLoading(false)
+      return
+    }
+    let alive = true
+    setLoading(true)
+    loadBody(post.slug).then((text) => {
+      if (!alive) return
+      setBody(text || '')
+      setLoading(false)
+    })
+    return () => {
+      alive = false
+    }
+  }, [post?.slug, post?.hasBody])
 
   if (!post) {
     return (
@@ -70,8 +94,14 @@ export default function PostDetail() {
         <div className="article-divider" />
 
         <div className="article-content">
-          {post.markdown ? (
-            <Markdown source={post.markdown} />
+          {post.hasBody ? (
+            loading ? (
+              <p className="article-loading">正在加载正文…</p>
+            ) : body ? (
+              <Markdown source={body} />
+            ) : (
+              <p className="article-loading">正文加载失败，刷新试试。</p>
+            )
           ) : (
             post.content.map((b, i) => {
               if (b.type === 'h2') return <h2 key={i}>{b.text}</h2>

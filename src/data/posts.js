@@ -1,12 +1,4 @@
-// 笔记源文件（Markdown，Vite ?raw 直接打包进产物）
-import lecture00 from '../content/notes/lecture-00.md?raw'
-import lecture01 from '../content/notes/lecture-01-clock-gpio.md?raw'
-import lecture02 from '../content/notes/lecture-02-uart-dma.md?raw'
-import lecture03 from '../content/notes/lecture-03-timer-adc-dac.md?raw'
-import lecture04 from '../content/notes/lecture-04-gray.md?raw'
-import lecture05 from '../content/notes/lecture-05-pwm-motor.md?raw'
-import lecture06 from '../content/notes/lecture-06-pid.md?raw'
-import gitGuide from '../content/notes/git-github-desktop.md?raw'
+// 文章正文不在这里导入：见 src/data/bodies.js，按路由按需加载
 import momentsRaw from '../content/moments.md?raw'
 
 // 解析碎碎念：把 moments.md 里每个「## 日期 | 心情」区块转成对象
@@ -72,7 +64,6 @@ export const timeline = [
 ]
 
 // 文章
-const countMdWords = (md) => md.replace(/\s+/g, '').length
 
 export const posts = [
   // ============ TI M0 课程笔记系列 ============
@@ -84,7 +75,8 @@ export const posts = [
     views: 312,
     tags: ['TI M0', '电赛', 'BSL'],
     series: 'TI M0 课程笔记',
-    markdown: lecture00,
+    hasBody: true,
+    words: 1278,
     cover: 'grid',
     excerpt:
       '电赛开跑前的准备工作：耗材选型建议用天猛星 + 米醋电控板 V2，再用重构过的 BSL 烧录工具给 MSPM0G3507 解锁芯片、烧录固件。',
@@ -97,7 +89,8 @@ export const posts = [
     views: 486,
     tags: ['TI M0', 'DL库', 'GPIO', '时钟'],
     series: 'TI M0 课程笔记',
-    markdown: lecture01,
+    hasBody: true,
+    words: 9365,
     cover: 'grid',
     excerpt:
       '从 DL 库和 HAL 库的区别讲起，对比 STM32F4 与 MSPM0G3507 的产品定位，再拆解 TI 时钟系统的"发电机"与"用电网络"，最后落到调度器和 GPIO。',
@@ -110,7 +103,8 @@ export const posts = [
     views: 521,
     tags: ['TI M0', 'UART', 'DMA', 'Ringbuffer'],
     series: 'TI M0 课程笔记',
-    markdown: lecture02,
+    hasBody: true,
+    words: 11527,
     excerpt:
       '串口是调嵌入式时最常用的窗口。这一讲从"单车道 vs 高速公路"讲起，把波特率、数据位、校验位、停止位一次讲透，再进入超时中断和 DMA + Ringbuffer 的组合拳。',
   },
@@ -122,7 +116,8 @@ export const posts = [
     views: 468,
     tags: ['TI M0', 'ADC', 'DAC', 'Timer'],
     series: 'TI M0 课程笔记',
-    markdown: lecture03,
+    hasBody: true,
+    words: 24384,
     cover: 'wave',
     excerpt:
       'ADC 把"斜坡"变成"楼梯"，DAC 用积木拼出平滑曲线。这一讲是配置最重的一讲：从 SysConfig 里 ADC 的时钟源、采样模式，到 TIMER 计数与 DAC 输出，逐项过一遍。',
@@ -135,7 +130,8 @@ export const posts = [
     views: 394,
     tags: ['TI M0', '传感器', 'ADC', '灰度'],
     series: 'TI M0 课程笔记',
-    markdown: lecture04,
+    hasBody: true,
+    words: 5161,
     excerpt:
       '感为无 MCU 灰度传感器不用单片机也能输出数字量。这一讲拆解它的硬件架构与多路复用电路、接线方式，以及 TrackN 位图的解析和处理流程。',
   },
@@ -147,7 +143,8 @@ export const posts = [
     views: 437,
     tags: ['TI M0', 'PWM', '电机', 'DRV8871'],
     series: 'TI M0 课程笔记',
-    markdown: lecture05,
+    hasBody: true,
+    words: 11073,
     excerpt:
       '电机驱动的另一条路：DRV8871 与 TB6612 的关键差异、快衰减控制逻辑，以及为什么每路电机需要两个 CC 通道——PWM 调速和外部中断在这一讲汇合。',
   },
@@ -159,7 +156,8 @@ export const posts = [
     views: 562,
     tags: ['TI M0', 'PID', '控制', 'JY901S'],
     series: 'TI M0 课程笔记',
-    markdown: lecture06,
+    hasBody: true,
+    words: 4441,
     cover: 'aurora',
     excerpt:
       '系列收尾：先接入 JY901S 陀螺仪，搞定相对零点和 0~360° 转换，然后从位置式 PID 出发，一路搭到速度环、角度环、循迹环。',
@@ -173,7 +171,8 @@ export const posts = [
     date: '2026-10-28',
     views: 96,
     tags: ['Git', 'GitHub', '部署', '教程'],
-    markdown: gitGuide,
+    hasBody: true,
+    words: 6660,
     cover: 'aurora',
     excerpt:
       '本地改完 → Commit 存档 → Push 上传 → Cloudflare 自动构建。这篇文章把 Git、GitHub、GitHub Desktop 三者的关系和完整部署流程讲清楚，末尾还有一次真实的 404 排查记录。',
@@ -302,7 +301,7 @@ export const posts = [
       { type: 'p', text: '至于读者——先把自己当成读者。三年后回来看，希望我能认出这些句子背后的自己。' },
     ],
   },
-].map((p) => (p.markdown && !p.words ? { ...p, words: countMdWords(p.markdown) } : p))
+]
 
 // 派生数据
 export const categoryCount = (name) => posts.filter((p) => p.category === name).length

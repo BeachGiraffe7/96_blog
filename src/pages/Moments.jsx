@@ -40,10 +40,10 @@ export default function Moments() {
         </div>
 
         <div className="moments-timeline">
-          {list.map((m) => {
+          {list.map((m, i) => {
             const color = moodColor[m.mood] || '#b3829d'
             return (
-              <div key={m.date} className="moment-item">
+              <div key={`${m.date}-${i}`} className="moment-item">
                 <span className="moment-date">{m.date.slice(5)}</span>
                 <div className="moment-body">
                   <div className="moment-head">

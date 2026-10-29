@@ -9,7 +9,12 @@
     "postbuild": "node scripts/copy-404.mjs && node scripts/seo.mjs",
     "preview": "vite preview",
     "photo": "node scripts/add-photo.mjs",
-    "optimize": "node scripts/optimize-images.mjs"
+    "optimize": "node scripts/optimize-images.mjs",
+    "growth:init": "node scripts/growth-crypt.mjs init",
+    "growth:decrypt": "node scripts/growth-crypt.mjs decrypt",
+    "growth:encrypt": "node scripts/growth-crypt.mjs encrypt",
+    "growth:verify": "node scripts/growth-crypt.mjs verify",
+    "growth:passwd": "node scripts/growth-crypt.mjs passwd"
   },
   "dependencies": {
     "react": "^18.3.1",

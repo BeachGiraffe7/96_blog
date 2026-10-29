@@ -1200,6 +1200,14 @@ button {
   margin-bottom: 18px;
 }
 
+/* 正文按需加载时的占位，避免整页跳动 */
+.article-loading {
+  padding: 40px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-4);
+}
+
 .article-content h2 {
   position: relative;
   margin: 32px 0 14px;

@@ -111,7 +111,7 @@ async function main() {
   const mod = await server.ssrLoadModule('/src/data/posts.js')
   await server.close()
 
-  const { posts, categories, site, moments } = mod
+  const { posts, categories, site, moments, allTags } = mod
   // 站点按时间倒序展示，feed / sitemap 也保持一致
   const newest = [...posts].sort((a, b) => b.date.localeCompare(a.date))
   const base = (process.env.SITE_URL || site.siteUrl || 'https://96-blog.pages.dev').replace(/\/$/, '')
@@ -243,20 +243,39 @@ async function main() {
     }))
   }
 
-  // 分类页
+  // 分类页（目录用解码后的名字，否则服务器按编码后的路径找不到文件）
   for (const c of categories) {
     const count = posts.filter((p) => p.category === c.name).length
-    const route = `category/${encodeURIComponent(c.name)}`
-    await writePage(route, build(route, {
+    const urlPath = `category/${encodeURIComponent(c.name)}`
+    await writePage(`category/${c.name}`, build(urlPath, {
       title: `${c.name} · ${site.name}`,
       description: `「${c.name}」分类下共 ${count} 篇文章。`,
-      url: `${base}/${route}`,
+      url: `${base}/${urlPath}`,
       image: `${base}/og/default.png`,
       extra: jsonLd({
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: `${c.name} · ${site.name}`,
-        url: `${base}/${route}`,
+        url: `${base}/${urlPath}`,
+      }),
+    }))
+  }
+
+  // 标签页
+  const tags = allTags()
+  for (const t of tags) {
+    const count = posts.filter((p) => p.tags.includes(t.name)).length
+    const urlPath = `tag/${encodeURIComponent(t.name)}`
+    await writePage(`tag/${t.name}`, build(urlPath, {
+      title: `#${t.name} · ${site.name}`,
+      description: `标签「${t.name}」下共 ${count} 篇文章。`,
+      url: `${base}/${urlPath}`,
+      image: `${base}/og/default.png`,
+      extra: jsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: `#${t.name} · ${site.name}`,
+        url: `${base}/${urlPath}`,
       }),
     }))
   }
@@ -266,6 +285,15 @@ async function main() {
     title: `写一条 · ${site.name}`,
     description: '发布碎碎念的编辑页。',
     url: `${base}/write`,
+    image: `${base}/og/default.png`,
+    extra: '<meta name="robots" content="noindex, nofollow" />',
+  }))
+
+  // 成长专栏：私密页，不收录、不进 sitemap / feed、不生成分享封面
+  await writePage('growth', build('growth', {
+    title: `成长 · ${site.name}`,
+    description: '私密记录。',
+    url: `${base}/growth`,
     image: `${base}/og/default.png`,
     extra: '<meta name="robots" content="noindex, nofollow" />',
   }))
@@ -280,6 +308,7 @@ async function main() {
     { loc: `${base}/tags` },
     { loc: `${base}/about` },
     ...categories.map((c) => ({ loc: `${base}/category/${encodeURIComponent(c.name)}` })),
+    ...tags.map((t) => ({ loc: `${base}/tag/${encodeURIComponent(t.name)}` })),
   ]
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -296,7 +325,7 @@ ${urls
 
   await writeFile(
     path.join(DIST, 'robots.txt'),
-    `User-agent: *\nDisallow: /write\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`,
+    `User-agent: *\nDisallow: /write\nDisallow: /growth\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`,
     'utf8',
   )
 
@@ -329,7 +358,9 @@ ${newest
   await writeFile(path.join(DIST, 'feed.xml'), feed, 'utf8')
 
   console.log(
-    `[seo] 生成 ${posts.length + 1} 张封面、${urls.length} 条 sitemap、feed.xml、robots.txt、${posts.length + pages.length + categories.length + 2} 个页面 meta`,
+    `[seo] 生成 ${posts.length + 1} 张封面、${urls.length} 条 sitemap、feed.xml、robots.txt、${
+      posts.length + pages.length + categories.length + tags.length + 3
+    } 个页面 meta`,
   )
 }
 

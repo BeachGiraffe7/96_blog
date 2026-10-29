@@ -22,6 +22,19 @@ const setCanonical = (href) => {
   el.setAttribute('href', href)
 }
 
+// 私密页需要 noindex；离开时把标签移除，避免污染其它页面
+const setRobots = (content) => {
+  const existing = document.querySelector('meta[name="robots"]')
+  if (!content) {
+    if (existing) existing.remove()
+    return
+  }
+  const el = existing || document.createElement('meta')
+  el.setAttribute('name', 'robots')
+  el.setAttribute('content', content)
+  if (!existing) document.head.appendChild(el)
+}
+
 // 构建时已经把 meta 写进每个页面的 HTML（给爬虫看），
 // 这里负责浏览器内跳转时同步标题，不然标签页永远停在首页标题。
 export default function RouteMeta() {
@@ -44,6 +57,10 @@ export default function RouteMeta() {
       const cat = categories.find((c) => c.name === name)
       title = `${cat ? cat.name : '分类'} · ${site.name}`
       desc = `「${name}」分类下的文章。`
+    } else if (pathname.startsWith('/tag/')) {
+      const name = decodeURIComponent(pathname.replace('/tag/', ''))
+      title = `#${name} · ${site.name}`
+      desc = `标签「${name}」下的文章。`
     } else if (pathname === '/moments') {
       title = `碎碎念 · ${site.name}`
       desc = '不够长、但值得记下来的想法。'
@@ -62,10 +79,14 @@ export default function RouteMeta() {
     } else if (pathname === '/write') {
       title = `写一条 · ${site.name}`
       desc = '发布碎碎念的编辑页。'
+    } else if (pathname === '/growth') {
+      title = `成长 · ${site.name}`
+      desc = ''
     }
 
     document.title = title
     setMeta('description', desc)
+    setRobots(pathname === '/write' || pathname === '/growth' ? 'noindex, nofollow' : '')
     setCanonical(`${base}${pathname === '/' ? '/' : pathname}`)
   }, [pathname])
 
