@@ -1,6 +1,8 @@
 /* ============================================================
    全局样式
-   颜色全部走语义变量，浅色 = 冷白灰 × 深海蓝，深色 = 墨夜
+   颜色全部走语义变量：尺寸与字体共用，配色由 data-palette 切换
+   浅色预设：cool 冷白 / paper 宣纸 / celadon 青瓷 / indigo 靛蓝 / terrazzo 水磨石
+   深色：墨夜（data-theme=dark，优先级最高）
    ============================================================ */
 :root {
   --shell: 1700px;
@@ -8,46 +10,15 @@
   --col-right: 330px;
   --gap: 22px;
 
-  /* 字体：默认无衬线，可在主题面板切换 */
+  /* 字体：默认无衬线，可在外观面板切换 */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Helvetica Neue', sans-serif;
   --font-serif: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'Noto Serif SC', Georgia, serif;
   --font-kai: 'Kaiti SC', 'KaiTi', 'STKaiti', 'Yuanti SC', 'Microsoft YaHei', sans-serif;
   --font-reading: var(--font-sans);
 
-  /* 版面 */
-  --bg: #f4f6f8;
-  --bg-glow: rgba(255, 255, 255, 0.95);
-  --bg-dot: rgba(53, 106, 154, 0.13);
-  --card: #ffffff;
-  --surface-soft: #f7f9fa;
-  --surface-sunken: #eef2f5;
-  --header-bg: rgba(255, 255, 255, 0.82);
-  --white-rgb: 255 255 255;
-  --white-rgb: 255 255 255;
-
-  --line: #dce2e8;
-  --line-soft: #e8edf1;
-  --line-strong: #c9d3dc;
-
-  /* 文字 */
-  --text: #263445;
-  --text-2: #4a5c6e;
-  --text-3: #76879a;
-  --text-4: #9aabb9;
-
-  /* 强调色 */
-  --accent: #356a9a;
-  --accent-strong: #2a5578;
-  --accent-rgb: 53 106 154;
-  --accent-soft: #e8f0f7;
-  --accent-badge: #d6e4f0;
-  --on-accent: #ffffff;
-
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 2px 10px rgba(38, 52, 69, 0.06);
-  --shadow-hover: 0 12px 30px rgba(38, 52, 69, 0.14);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
   /* 状态色 */
@@ -58,16 +29,169 @@
   --danger-soft: #fdeceb;
   --danger-line: #f7d3d0;
 
-  /* 兼容旧命名，全部指向新的强调色 */
+  /* 兼容旧命名 */
   --pink: var(--accent);
   --pink-strong: var(--accent-strong);
   --pink-soft: var(--accent-soft);
   --pink-badge: var(--accent-badge);
 
+  /* ---- 默认配色：冷白 ---- */
+  --bg: #eceff4;
+  --bg-glow: rgba(255, 255, 255, 0.9);
+  --bg-dot: rgba(47, 98, 143, 0.14);
+  --card: #ffffff;
+  --surface-soft: #f3f6f9;
+  --surface-sunken: #e5eaf0;
+  --header-bg: rgba(252, 253, 255, 0.82);
+  --white-rgb: 255 255 255;
+
+  --line: #d8dfe7;
+  --line-soft: #e4e9ef;
+  --line-strong: #c2ccd7;
+
+  --text: #22303f;
+  --text-2: #465a6d;
+  --text-3: #74879a;
+  --text-4: #98a9b8;
+
+  --accent: #2f628f;
+  --accent-strong: #244f74;
+  --accent-rgb: 47 98 143;
+  --accent-soft: #e3edf7;
+  --accent-badge: #cddff0;
+  --on-accent: #ffffff;
+
+  --shadow: 0 2px 10px rgba(30, 48, 66, 0.07);
+  --shadow-hover: 0 12px 30px rgba(30, 48, 66, 0.16);
+
   color-scheme: light;
 }
 
-/* ---------------- 深色：墨夜 ---------------- */
+/* ---------------- 宣纸 ---------------- */
+[data-palette='paper'] {
+  --bg: #f4eee2;
+  --bg-glow: rgba(255, 252, 244, 0.9);
+  --bg-dot: rgba(150, 102, 47, 0.12);
+  --card: #fffdf7;
+  --surface-soft: #f9f5ec;
+  --surface-sunken: #ece5d7;
+  --header-bg: rgba(255, 253, 247, 0.84);
+  --white-rgb: 255 253 247;
+
+  --line: #e3dac9;
+  --line-soft: #ece5d6;
+  --line-strong: #d2c6b0;
+
+  --text: #322b21;
+  --text-2: #5b5144;
+  --text-3: #8a7e6c;
+  --text-4: #a89c89;
+
+  --accent: #96662f;
+  --accent-strong: #7a5225;
+  --accent-rgb: 150 102 47;
+  --accent-soft: #f4e9d8;
+  --accent-badge: #e8d6bd;
+  --on-accent: #fffdf7;
+
+  --shadow: 0 2px 10px rgba(60, 48, 32, 0.07);
+  --shadow-hover: 0 12px 30px rgba(60, 48, 32, 0.16);
+}
+
+/* ---------------- 青瓷 ---------------- */
+[data-palette='celadon'] {
+  --bg: #eaf0ee;
+  --bg-glow: rgba(255, 255, 255, 0.9);
+  --bg-dot: rgba(58, 122, 111, 0.13);
+  --card: #ffffff;
+  --surface-soft: #f1f6f4;
+  --surface-sunken: #e2eae7;
+  --header-bg: rgba(250, 253, 251, 0.82);
+  --white-rgb: 255 255 255;
+
+  --line: #d4e0db;
+  --line-soft: #e0eae6;
+  --line-strong: #bccdc7;
+
+  --text: #22302c;
+  --text-2: #465a51;
+  --text-3: #71877c;
+  --text-4: #95a89e;
+
+  --accent: #3a7a6f;
+  --accent-strong: #2c6259;
+  --accent-rgb: 58 122 111;
+  --accent-soft: #e0efeb;
+  --accent-badge: #cae3dc;
+  --on-accent: #ffffff;
+
+  --shadow: 0 2px 10px rgba(28, 48, 42, 0.07);
+  --shadow-hover: 0 12px 30px rgba(28, 48, 42, 0.16);
+}
+
+/* ---------------- 靛蓝 ---------------- */
+[data-palette='indigo'] {
+  --bg: #eeeef6;
+  --bg-glow: rgba(255, 255, 255, 0.9);
+  --bg-dot: rgba(75, 79, 150, 0.13);
+  --card: #ffffff;
+  --surface-soft: #f5f5fa;
+  --surface-sunken: #e4e5f0;
+  --header-bg: rgba(252, 252, 255, 0.82);
+  --white-rgb: 255 255 255;
+
+  --line: #dcdcea;
+  --line-soft: #e7e7f1;
+  --line-strong: #c5c6d9;
+
+  --text: #262840;
+  --text-2: #4a4d6b;
+  --text-3: #767a99;
+  --text-4: #9a9db5;
+
+  --accent: #4b4f96;
+  --accent-strong: #3a3e7c;
+  --accent-rgb: 75 79 150;
+  --accent-soft: #e7e8f5;
+  --accent-badge: #d4d6ed;
+  --on-accent: #ffffff;
+
+  --shadow: 0 2px 10px rgba(36, 38, 64, 0.07);
+  --shadow-hover: 0 12px 30px rgba(36, 38, 64, 0.16);
+}
+
+/* ---------------- 水磨石 ---------------- */
+[data-palette='terrazzo'] {
+  --bg: #f2ede8;
+  --bg-glow: rgba(255, 252, 248, 0.9);
+  --bg-dot: rgba(162, 90, 69, 0.11);
+  --card: #fffdfa;
+  --surface-soft: #f8f4f0;
+  --surface-sunken: #eae4dd;
+  --header-bg: rgba(255, 253, 250, 0.84);
+  --white-rgb: 255 253 250;
+
+  --line: #e1d9d1;
+  --line-soft: #ebe4dd;
+  --line-strong: #cfc3b8;
+
+  --text: #302824;
+  --text-2: #574b44;
+  --text-3: #877a71;
+  --text-4: #a89c93;
+
+  --accent: #a25a45;
+  --accent-strong: #864634;
+  --accent-rgb: 162 90 69;
+  --accent-soft: #f5e5df;
+  --accent-badge: #e9d1c7;
+  --on-accent: #fffdfa;
+
+  --shadow: 0 2px 10px rgba(56, 40, 34, 0.07);
+  --shadow-hover: 0 12px 30px rgba(56, 40, 34, 0.16);
+}
+
+/* ---------------- 深色：墨夜（放在最后，覆盖所有浅色预设） ---------------- */
 [data-theme='dark'] {
   --bg: #1b1a1e;
   --bg-glow: rgba(232, 159, 180, 0.05);
@@ -76,7 +200,6 @@
   --surface-soft: #2c2a30;
   --surface-sunken: #201f23;
   --header-bg: rgba(27, 26, 30, 0.82);
-  --white-rgb: 44 42 48;
   --white-rgb: 44 42 48;
 
   --line: #3a3740;
@@ -273,16 +396,6 @@ button {
   gap: 6px;
 }
 
-/* 深色下封面压暗，避免在暗底上发光 */
-[data-theme='dark'] .post-cover {
-  filter: brightness(0.5) saturate(0.8);
-}
-
-/* 深色下封面压暗，避免在暗底上发光 */
-[data-theme='dark'] .post-cover {
-  filter: brightness(0.5) saturate(0.8);
-}
-
 /* ---------- 外观设置面板 ---------- */
 .theme-toggle.active {
   color: var(--accent-strong);
@@ -294,7 +407,7 @@ button {
   top: calc(100% + 12px);
   right: 0;
   z-index: 60;
-  width: 262px;
+  width: 286px;
   padding: 14px;
   background: var(--card);
   border: 1px solid var(--line);
@@ -377,6 +490,48 @@ button {
   font-size: 11px;
   line-height: 1.65;
   color: var(--text-4);
+}
+
+.theme-inline-note {
+  color: var(--text-4);
+}
+
+/* 配色色卡 */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.palette-opt {
+  position: relative;
+  height: 46px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  transition: transform 0.16s var(--ease);
+}
+
+.palette-opt:hover {
+  transform: translateY(-1px);
+}
+
+.palette-opt.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.palette-band {
+  width: 100%;
+  padding: 3px 0 4px;
+  font-size: 10.5px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: #fff;
+  letter-spacing: 0.02em;
 }
 
 .icon-btn {
@@ -988,19 +1143,41 @@ button {
 }
 
 .cover-photon {
-  background: linear-gradient(140deg, #d2e3f2 0%, #b0cce6 34%, #96b7d8 68%, #84a7cb 100%);
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--accent) 16%, var(--card)),
+    color-mix(in srgb, var(--accent) 40%, var(--card)) 38%,
+    color-mix(in srgb, var(--accent) 27%, var(--card)) 72%,
+    color-mix(in srgb, var(--accent) 36%, var(--card))
+  );
 }
 
 .cover-aurora {
-  background: linear-gradient(140deg, #c9d4ee 0%, #adbfe2 40%, #99b2d4 70%, #bbd6e3 100%);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 30%, var(--card)),
+    color-mix(in srgb, var(--accent) 14%, var(--card)) 45%,
+    color-mix(in srgb, var(--accent) 38%, var(--card))
+  );
 }
 
 .cover-grid {
-  background: linear-gradient(140deg, #c3e1dc 0%, #98cadf 55%, #b0c4e6 100%);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 22%, var(--card)),
+    color-mix(in srgb, var(--accent) 38%, var(--card)) 55%,
+    color-mix(in srgb, var(--accent) 24%, var(--card))
+  );
 }
 
 .cover-wave {
-  background: linear-gradient(140deg, #abcae6 0%, #97b6d4 40%, #b2c1de 78%, #cddce9 100%);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--accent) 34%, var(--card)),
+    color-mix(in srgb, var(--accent) 20%, var(--card)) 40%,
+    color-mix(in srgb, var(--accent) 30%, var(--card)) 78%,
+    color-mix(in srgb, var(--accent) 18%, var(--card))
+  );
 }
 
 .cover-glow {

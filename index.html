@@ -10,7 +10,7 @@
     <link rel="alternate" type="application/rss+xml" title="海滩长颈鹿" href="/feed.xml" />
     <meta name="theme-color" content="#f4f6f8" />
 
-    <!-- 主题/字体在首屏渲染前定好，避免闪白 -->
+    <!-- 主题/配色/字体在首屏渲染前定好，避免闪白 -->
     <script>
       (function () {
         try {
@@ -19,10 +19,19 @@
             t === 'dark' ||
             (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
           if (dark) document.documentElement.dataset.theme = 'dark'
+          var p = localStorage.getItem('blog_palette')
+          if (p && p !== 'cool') document.documentElement.dataset.palette = p
           var f = localStorage.getItem('blog_font')
           if (f && f !== 'sans') document.documentElement.dataset.font = f
+          var tints = {
+            cool: '#eceff4',
+            paper: '#f4eee2',
+            celadon: '#eaf0ee',
+            indigo: '#eeeef6',
+            terrazzo: '#f2ede8',
+          }
           var m = document.querySelector('meta[name="theme-color"]')
-          if (m) m.setAttribute('content', dark ? '#1b1a1e' : '#f4f6f8')
+          if (m) m.setAttribute('content', dark ? '#1b1a1e' : tints[p] || '#eceff4')
         } catch (e) {}
       })()
     </script>
