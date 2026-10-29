@@ -107,6 +107,8 @@ export default function ThemePanel({ onClose, onModeChange }) {
                 key={f.id}
                 type="button"
                 className={active ? 'theme-opt font-opt active' : 'theme-opt font-opt'}
+                title={f.note}
+                title={f.note}
                 aria-pressed={active}
                 onClick={() => setFontState(setFont(f.id))}
               >
@@ -118,7 +120,9 @@ export default function ThemePanel({ onClose, onModeChange }) {
             )
           })}
         </div>
-        <p className="theme-note">字体只作用于文章正文，标题和界面不跟着变。</p>
+        <p className="theme-note">
+          字体只作用于文章正文。文楷、小赖是网络字体，首次选中需下载 1–2 MB，之后走缓存。
+        </p>
       </div>
     </div>
   )

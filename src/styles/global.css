@@ -15,6 +15,9 @@
     'Microsoft YaHei', 'Helvetica Neue', sans-serif;
   --font-serif: 'Songti SC', 'SimSun', 'Source Han Serif SC', 'Noto Serif SC', Georgia, serif;
   --font-kai: 'Kaiti SC', 'KaiTi', 'STKaiti', 'Yuanti SC', 'Microsoft YaHei', sans-serif;
+  /* 这两个走 CDN，只在选中时才插入 <link>，不选就不下载 */
+  --font-wenkai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
+  --font-xiaolai: 'Xiaolai SC', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   --font-reading: var(--font-sans);
 
   --radius: 16px;
@@ -129,66 +132,68 @@
   --shadow-hover: 0 12px 30px rgba(28, 48, 42, 0.16);
 }
 
-/* ---------------- 靛蓝 ---------------- */
-[data-palette='indigo'] {
-  --bg: #eeeef6;
-  --bg-glow: rgba(255, 255, 255, 0.9);
-  --bg-dot: rgba(75, 79, 150, 0.13);
-  --card: #ffffff;
-  --surface-soft: #f5f5fa;
-  --surface-sunken: #e4e5f0;
-  --header-bg: rgba(252, 252, 255, 0.82);
-  --white-rgb: 255 255 255;
 
-  --line: #dcdcea;
-  --line-soft: #e7e7f1;
-  --line-strong: #c5c6d9;
 
-  --text: #262840;
-  --text-2: #4a4d6b;
-  --text-3: #767a99;
-  --text-4: #9a9db5;
+/* ---------------- 粉白（呼应墨夜的粉调） ---------------- */
+[data-palette='blush'] {
+  --bg: #f8f3f5;
+  --bg-glow: rgba(255, 252, 253, 0.9);
+  --bg-dot: rgba(196, 102, 127, 0.12);
+  --card: #fffdfe;
+  --surface-soft: #fbf6f8;
+  --surface-sunken: #f1e8ec;
+  --header-bg: rgba(255, 253, 254, 0.84);
+  --white-rgb: 255 253 254;
 
-  --accent: #4b4f96;
-  --accent-strong: #3a3e7c;
-  --accent-rgb: 75 79 150;
-  --accent-soft: #e7e8f5;
-  --accent-badge: #d4d6ed;
-  --on-accent: #ffffff;
+  --line: #ecdee4;
+  --line-soft: #f3e9ee;
+  --line-strong: #dcc8d2;
 
-  --shadow: 0 2px 10px rgba(36, 38, 64, 0.07);
-  --shadow-hover: 0 12px 30px rgba(36, 38, 64, 0.16);
+  --text: #2e2730;
+  --text-2: #574d56;
+  --text-3: #8a7d86;
+  --text-4: #a89ba4;
+
+  --accent: #c4667f;
+  --accent-strong: #a8516a;
+  --accent-rgb: 196 102 127;
+  --accent-soft: #f7e6ec;
+  --accent-badge: #efd2dc;
+  --on-accent: #fffdfe;
+
+  --shadow: 0 2px 10px rgba(72, 44, 56, 0.07);
+  --shadow-hover: 0 12px 30px rgba(72, 44, 56, 0.16);
 }
 
-/* ---------------- 水磨石 ---------------- */
-[data-palette='terrazzo'] {
-  --bg: #f2ede8;
-  --bg-glow: rgba(255, 252, 248, 0.9);
-  --bg-dot: rgba(162, 90, 69, 0.11);
-  --card: #fffdfa;
-  --surface-soft: #f8f4f0;
-  --surface-sunken: #eae4dd;
-  --header-bg: rgba(255, 253, 250, 0.84);
-  --white-rgb: 255 253 250;
+/* ---------------- 纯白（飞书那种极简） ---------------- */
+[data-palette='plain'] {
+  --bg: #f5f6f7;
+  --bg-glow: rgba(255, 255, 255, 0.98);
+  --bg-dot: rgba(51, 112, 255, 0.08);
+  --card: #ffffff;
+  --surface-soft: #fafbfc;
+  --surface-sunken: #f0f1f3;
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --white-rgb: 255 255 255;
 
-  --line: #e1d9d1;
-  --line-soft: #ebe4dd;
-  --line-strong: #cfc3b8;
+  --line: #e4e5e8;
+  --line-soft: #eeeff1;
+  --line-strong: #d0d2d6;
 
-  --text: #302824;
-  --text-2: #574b44;
-  --text-3: #877a71;
-  --text-4: #a89c93;
+  --text: #1f2329;
+  --text-2: #4e5561;
+  --text-3: #7a828d;
+  --text-4: #9aa1ab;
 
-  --accent: #a25a45;
-  --accent-strong: #864634;
-  --accent-rgb: 162 90 69;
-  --accent-soft: #f5e5df;
-  --accent-badge: #e9d1c7;
-  --on-accent: #fffdfa;
+  --accent: #3370ff;
+  --accent-strong: #245bdb;
+  --accent-rgb: 51 112 255;
+  --accent-soft: #eaf0ff;
+  --accent-badge: #d6e2ff;
+  --on-accent: #ffffff;
 
-  --shadow: 0 2px 10px rgba(56, 40, 34, 0.07);
-  --shadow-hover: 0 12px 30px rgba(56, 40, 34, 0.16);
+  --shadow: 0 1px 4px rgba(31, 35, 41, 0.05);
+  --shadow-hover: 0 6px 20px rgba(31, 35, 41, 0.1);
 }
 
 /* ---------------- 深色：墨夜（放在最后，覆盖所有浅色预设） ---------------- */
@@ -238,6 +243,14 @@
 
 [data-font='kai'] {
   --font-reading: var(--font-kai);
+}
+
+[data-font='wenkai'] {
+  --font-reading: var(--font-wenkai);
+}
+
+[data-font='xiaolai'] {
+  --font-reading: var(--font-xiaolai);
 }
 
 * {
@@ -1569,15 +1582,24 @@ button {
 }
 
 /* 衬线/圆体的字面更小，行高与字距要跟着调 */
-[data-font='serif'] .article-content {
+[data-font='serif'] .article-content,
+[data-font='kai'] .article-content,
+[data-font='wenkai'] .article-content,
+[data-font='xiaolai'] .article-content {
   font-size: 15.5px;
-  line-height: 2.05;
+  line-height: 2.06;
   letter-spacing: 0.01em;
 }
 
+/* 系统宋/楷没有粗体字重，靠合成；手写体本身笔画细，压到 500 */
+[data-font='serif'] .article-content,
 [data-font='kai'] .article-content {
-  font-size: 15.5px;
-  line-height: 2.05;
+  font-weight: 600;
+}
+
+[data-font='wenkai'] .article-content,
+[data-font='xiaolai'] .article-content {
+  font-weight: 500;
 }
 
 .article-content p {

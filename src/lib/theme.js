@@ -14,15 +14,43 @@ export const PALETTES = [
   { id: 'cool', label: '冷白', bg: '#eceff4', card: '#ffffff', accent: '#2f628f' },
   { id: 'paper', label: '宣纸', bg: '#f4eee2', card: '#fffdf7', accent: '#96662f' },
   { id: 'celadon', label: '青瓷', bg: '#eaf0ee', card: '#ffffff', accent: '#3a7a6f' },
-  { id: 'indigo', label: '靛蓝', bg: '#eeeef6', card: '#ffffff', accent: '#4b4f96' },
-  { id: 'terrazzo', label: '砖红', bg: '#f2ede8', card: '#fffdfa', accent: '#a25a45' },
+  { id: 'blush', label: '粉白', bg: '#f8f3f5', card: '#fffdfe', accent: '#c4667f' },
+  { id: 'plain', label: '纯白', bg: '#f5f6f7', card: '#ffffff', accent: '#3370ff' },
 ]
 
 export const FONTS = [
-  { id: 'sans', label: '无衬线', note: '清晰，默认' },
-  { id: 'serif', label: '宋体', note: '像书页' },
-  { id: 'kai', label: '楷体', note: '手写感' },
+  { id: 'sans', label: '无衬线', note: '系统字体，最快' },
+  { id: 'wenkai', label: '文楷', note: '手写楷，需下载' },
+  { id: 'xiaolai', label: '小赖', note: '圆润手写，需下载' },
+  { id: 'serif', label: '宋体粗', note: '系统宋体加粗' },
+  { id: 'kai', label: '楷体粗', note: '系统楷体加粗' },
 ]
+
+// 手写体走 CDN，按需插入 <link>：不选就不请求
+const WEBFONTS = {
+  wenkai: 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css',
+  xiaolai: 'https://cdn.jsdelivr.net/npm/@chinese-fonts/xiaolai@3.0.0/dist/Xiaolai/result.css',
+}
+
+const loadedFonts = new Set()
+
+export function loadWebFont(id) {
+  const href = WEBFONTS[id]
+  if (!href || loadedFonts.has(id) || typeof document === 'undefined') return false
+  if (document.querySelector(`link[data-webfont="${id}"]`)) {
+    loadedFonts.add(id)
+    return true
+  }
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = href
+  link.dataset.webfont = id
+  document.head.appendChild(link)
+  loadedFonts.add(id)
+  return true
+}
+
+export const needsWebFont = (id) => Boolean(WEBFONTS[id])
 
 const read = (key, fallback) => {
   try {
@@ -56,15 +84,19 @@ export function applyTheme(theme = getTheme(), font = getFont(), palette = getPa
   if (mode === 'dark') root.dataset.theme = 'dark'
   else root.removeAttribute('data-theme')
 
-  if (palette && palette !== 'cool') root.dataset.palette = palette
+  // 旧版本可能存着已删除的配色，回退到默认
+  const safePalette = PALETTES.some((p) => p.id === palette) ? palette : 'cool'
+  if (safePalette !== 'cool') root.dataset.palette = safePalette
   else root.removeAttribute('data-palette')
 
   if (font && font !== 'sans') root.dataset.font = font
   else root.removeAttribute('data-font')
 
+  if (font) loadWebFont(font)
+
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) {
-    const tint = mode === 'dark' ? '#1b1a1e' : PALETTES.find((p) => p.id === palette)?.bg || '#eceff4'
+    const tint = mode === 'dark' ? '#1b1a1e' : PALETTES.find((p) => p.id === safePalette)?.bg || '#eceff4'
     meta.setAttribute('content', tint)
   }
 
