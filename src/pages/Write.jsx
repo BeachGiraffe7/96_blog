@@ -4,6 +4,7 @@ import { gh, checkRepo, readFile, writeFile } from '../lib/github'
 import { site } from '../data/posts'
 import { Icon } from '../components/Icons'
 import PostEditor from '../components/PostEditor'
+import ManagePanel from '../components/ManagePanel'
 import WriteGate from '../components/WriteGate'
 import { isWriteUnlocked, lockWrite } from '../lib/writeAuth'
 
@@ -17,7 +18,8 @@ const today = () => {
 
 export default function Write() {
   const [sp, setSp] = useSearchParams()
-  const type = sp.get('type') === 'post' ? 'post' : 'moment'
+  const typeParam = sp.get('type')
+  const type = typeParam === 'post' ? 'post' : typeParam === 'manage' ? 'manage' : 'moment'
 
   const [token, setToken] = useState('')
   const [tokenDraft, setTokenDraft] = useState('')
@@ -35,7 +37,8 @@ export default function Write() {
   const [unlocked, setUnlocked] = useState(isWriteUnlocked)
 
   useEffect(() => {
-    document.title = type === 'post' ? '写文章 · 海滩长颈鹿' : '写一条碎碎念 · 海滩长颈鹿'
+    document.title =
+      type === 'post' ? '写文章 · 海滩长颈鹿' : type === 'manage' ? '管理内容 · 海滩长颈鹿' : '写一条碎碎念 · 海滩长颈鹿'
     const t = gh.getToken()
     if (t) {
       setToken(t)
@@ -48,8 +51,8 @@ export default function Write() {
 
   const switchType = (next) => {
     const p = new URLSearchParams(sp)
-    if (next === 'post') p.set('type', 'post')
-    else p.delete('type')
+    if (next === 'moment') p.delete('type')
+    else p.set('type', next)
     setSp(p, { replace: true })
     setDone(false)
     setPublished(null)
@@ -129,13 +132,13 @@ export default function Write() {
     }
   }
 
-  const titleText = type === 'post' ? '写文章' : '写一条'
+  const titleText = type === 'post' ? '写文章' : type === 'manage' ? '管理内容' : '写一条'
 
   const header = (
     <header className="write-header">
-      <Link to={type === 'post' ? '/' : '/moments'} className="write-back">
+      <Link to={type === 'moment' ? '/moments' : '/'} className="write-back">
         <Icon.arrowLeft />
-        {type === 'post' ? '主页' : '碎碎念'}
+        {type === 'moment' ? '碎碎念' : '主页'}
       </Link>
       <span className="write-title">{titleText}</span>
       <div className="write-head-actions">
@@ -186,6 +189,13 @@ export default function Write() {
           onClick={() => switchType('post')}
         >
           文章
+        </button>
+        <button
+          type="button"
+          className={type === 'manage' ? 'write-tab active' : 'write-tab'}
+          onClick={() => switchType('manage')}
+        >
+          管理
         </button>
       </nav>
 
@@ -265,6 +275,8 @@ export default function Write() {
             </button>
           </div>
         </section>
+      ) : type === 'manage' ? (
+        <ManagePanel token={token} />
       ) : type === 'post' ? (
         <PostEditor token={token} onPublished={setPublished} />
       ) : done ? (

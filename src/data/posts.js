@@ -1,22 +1,9 @@
 // 文章正文不在这里导入：见 src/data/bodies.js，按路由按需加载
 import momentsRaw from '../content/moments.md?raw'
 import livePostsRaw from './livePosts.json'
-
-// 解析碎碎念：把 moments.md 里每个「## 日期 | 心情」区块转成对象
-const parseMoments = (raw) => {
-  const body = raw.replace(/<!--[\s\S]*?-->/g, '')
-  return body
-    .split(/^##\s+/m)
-    .slice(1)
-    .map((block) => {
-      const lines = block.split('\n')
-      const head = lines.shift().trim()
-      const [date, mood] = head.split('|').map((s) => s.trim())
-      const text = lines.join(' ').replace(/\s+/g, ' ').trim()
-      return { date, mood: mood || '平静', text }
-    })
-    .filter((m) => /^\d{4}-\d{2}-\d{2}$/.test(m.date) && m.text)
-}
+import hiddenRaw from './hidden.json'
+// 碎碎念的解析规则放在 lib/moments.js：管理页要用同一套规则才能删对条目
+import { parseMoments } from '../lib/moments'
 
 // 站点信息
 export const site = {
@@ -30,6 +17,10 @@ export const site = {
   repo: 'BeachGiraffe7/96_blog',
   branch: 'main',
   momentsPath: 'src/content/moments.md',
+  livePostsPath: 'src/data/livePosts.json',
+  hiddenPath: 'src/data/hidden.json',
+  livePostsPath: 'src/data/livePosts.json',
+  hiddenPath: 'src/data/hidden.json',
   siteUrl: 'https://beachgiraffe.pages.dev',
   links: [
     { icon: 'github', href: 'https://github.com', label: 'GitHub' },
@@ -307,7 +298,14 @@ const staticPosts = [
 // 写作页发布的新文章：元信息在 livePosts.json，正文在 src/content/notes/<slug>.md
 export const livePosts = Array.isArray(livePostsRaw) ? livePostsRaw : []
 
-export const posts = [...staticPosts, ...livePosts].sort((a, b) => (a.date < b.date ? 1 : -1))
+// 已下线的文章（写作页「管理」里下线仓库里的文章时写入这里）。
+// 正文文件不删，只从站点隐藏，所以随时能恢复。
+export const hiddenSlugs = Array.isArray(hiddenRaw) ? hiddenRaw : []
+
+// 不过滤的全集：管理页要能按 slug 找到已下线文章的信息
+export const allPosts = [...staticPosts, ...livePosts].sort((a, b) => (a.date < b.date ? 1 : -1))
+
+export const posts = allPosts.filter((p) => !hiddenSlugs.includes(p.slug))
 
 // 派生数据
 export const categoryCount = (name) => posts.filter((p) => p.category === name).length

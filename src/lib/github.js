@@ -55,7 +55,8 @@ const request = (url, options = {}) => {
   return fetch(url, opt)
 }
 
-async function handle(res) {  if (res.ok) return res.json()
+async function handle(res) {
+  if (res.ok) return res.json()
   let detail = ''
   try {
     const j = await res.json()
@@ -101,4 +102,32 @@ export async function writeFile({ repo, branch, path, token, text, sha, message 
   })
   const data = await handle(res)
   return { commitUrl: data.commit?.html_url || '', sha: data.content?.sha }
+}
+
+// 删除文件（需要 sha）
+export async function deleteFile({ repo, branch, path, token, sha, message }) {
+  const res = await request(`${API}/repos/${repo}/contents/${path}`, {
+    method: 'DELETE',
+    headers: { ...headers(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, sha, branch }),
+  })
+  const data = await handle(res)
+  return { commitUrl: data.commit?.html_url || '' }
+}
+
+// 带 409 重试的「读-改-写」：手机上连着写两条时容易撞车
+export async function updateText({ repo, branch, path, token, message, update, retries = 2 }) {
+  let attempt = 0
+  for (;;) {
+    const file = await readFile({ repo, branch, path, token })
+    const before = file ? file.text : ''
+    const after = update(before)
+    if (after === null) throw new Error('没有找到要修改的内容（可能已被改动，刷新重试）')
+    try {
+      return await writeFile({ repo, branch, path, token, text: after, sha: file?.sha, message })
+    } catch (err) {
+      attempt += 1
+      if (attempt >= retries) throw err
+    }
+  }
 }
