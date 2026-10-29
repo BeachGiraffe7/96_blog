@@ -138,7 +138,7 @@ npm run dev
 
 登录 `dash.cloudflare.com`，左侧栏「计算」分组里点 `Workers & Pages`，然后点右上角的蓝色按钮。
 
-![](/notes/git-github-desktop/image/cf-01-workers-pages.webp)
+![Workers & Pages 页面：右上角蓝色按钮就是「创建应用程序」](/notes/git-github-desktop/image/cf-01-workers-pages.webp)
 
 **② 选择「Continue with GitHub」**
 
@@ -146,13 +146,15 @@ npm run dev
 
 注意面板底部还有一行小字「需要使用旧版 Pages 工作流？继续前往 Pages」——两种入口都能到达 Pages，走 GitHub 这个更顺。
 
+![「创建新项目」面板：第一项是 Continue with GitHub](/notes/git-github-desktop/image/cf-02-create-project.webp)
+
 **③ 在「开始使用 Pages」页选「导入现有 Git 存储库」**
 
 这里有两个选项：`导入现有 Git 存储库` 和 `拖放文件`。我们已经有仓库了，选第一个，点右侧的「开始使用」。
 
 （`拖放文件` 是直接把 `dist` 文件夹拖上去，适合没有仓库的情况，但那样每次更新都得手动重传。）
 
-![](/notes/git-github-desktop/image/cf-03-import-git.webp)
+![「开始使用 Pages」：选「导入现有 Git 存储库」](/notes/git-github-desktop/image/cf-03-import-git.webp)
 
 **④ 选中仓库**
 
@@ -163,7 +165,7 @@ npm run dev
 
 选中后点右下角 `开始设置`。
 
-![](/notes/git-github-desktop/image/cf-04-select-repo.webp)
+![选择存储库：勾选 96_blog，再点「开始设置」](/notes/git-github-desktop/image/cf-04-select-repo.webp)
 
 **⑤ 填构建配置**
 
@@ -178,7 +180,7 @@ npm run dev
 | 部署目录 | `dist` |
 | 根目录 | 留空 |
 
-![](/notes/git-github-desktop/image/cf-05-build-config.webp)
+![构建配置：框架预设选 React (Vite)，构建命令和输出目录会自动填好](/notes/git-github-desktop/image/cf-05-build-config.webp)
 
 点 `保存并部署`。它会开始拉代码、装依赖、跑构建，一两分钟后给出一个 `xxx.pages.dev` 地址。
 

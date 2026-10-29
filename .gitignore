@@ -6,3 +6,9 @@ dist
 
 # 本地工作记录，不必公开
 .workbuddy/
+
+# 原始素材暂存区（转换后就不需要入库）
+raw/
+
+# 编辑器粘图时自动生成的资源目录，图片应放 public/notes/<slug>/image/
+*.assets/
