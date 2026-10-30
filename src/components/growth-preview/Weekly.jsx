@@ -7,8 +7,12 @@ export default function Weekly({ data, commit, onOpenDay }) {
   const [showExport, setShowExport] = useState(false);
   const [preview, setPreview] = useState(false);
   const [message, setMessage] = useState("");
+  // week is the learning-record source; its review is archived in the following week.
+  const archiveWeek = shiftWeek(week, 1);
+  const archiveRange = weekRange(archiveWeek);
   const range = weekRange(week);
-  const text = data.reviewDrafts[week] ?? data.weekly[week]?.text ?? "";
+  const text =
+    data.reviewDrafts[archiveWeek] ?? data.weekly[archiveWeek]?.text ?? "";
   const digest = previewDigest(data, week);
   const hasRecord = Object.entries(data.days).filter(
     ([d, v]) =>
@@ -45,13 +49,17 @@ export default function Weekly({ data, commit, onOpenDay }) {
   const save = () => {
     setMessage("");
     const drafts = { ...data.reviewDrafts };
-    delete drafts[week];
+    delete drafts[archiveWeek];
     commit(
       {
         ...data,
         weekly: {
           ...data.weekly,
-          [week]: { text, updatedAt: new Date().toISOString() },
+          [archiveWeek]: {
+            text,
+            sourceWeek: week,
+            updatedAt: new Date().toISOString(),
+          },
         },
         reviewDrafts: drafts,
       },
@@ -80,19 +88,17 @@ export default function Weekly({ data, commit, onOpenDay }) {
               ‹
             </button>
             <div>
-              <strong>{week}</strong>
+              <strong>{archiveWeek}</strong>
               <span>
-                {range.start} — {range.end}
+                {archiveRange.start} — {archiveRange.end}
               </span>
               <small>
-                {week === lastFullWeek()
-                  ? "上一完整周"
-                  : week === isoWeek(localDate())
-                    ? "本周（尚未结束）"
-                    : week > isoWeek(localDate())
-                      ? "未来周"
-                      : "历史周"}{" "}
-                · 周一至周日
+                {archiveWeek === isoWeek(localDate())
+                  ? "本周复盘"
+                  : archiveWeek > isoWeek(localDate())
+                    ? "未来周复盘"
+                    : "历史周复盘"}{" "}
+                · 回顾前一周
               </small>
             </div>
             <button
@@ -108,18 +114,17 @@ export default function Weekly({ data, commit, onOpenDay }) {
               className="gw-text-button"
               onClick={() => select(lastFullWeek())}
             >
-              回到上周
-            </button>
-            <button
-              className="gw-text-button"
-              onClick={() => select(isoWeek(localDate()))}
-            >
-              查看本周
+              回到本周
             </button>
           </div>
           <section className="gw-export-step">
             <span className="gw-small-tag">步骤 1 · 导出给 AI</span>
-            <h3>这周每天做了什么？</h3>
+            <h3>上一周每天做了什么？</h3>
+            <p>
+              <strong>学习记录来源：{week}</strong>
+              <br />
+              {range.start} — {range.end}（周一至周日）
+            </p>
             <p>
               有记录 {hasRecord} / 7
               天。导出包含任务与完成状态、分类、学习收获、卡点和下一步；缺失日期会明确标注。
@@ -156,7 +161,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
               </label>
             )}
             <p className="gw-muted">
-              默认导出上一完整周；切换周次后导出的是屏幕显示的日期范围。文件含学习内容，交给外部
+              本周复盘使用上一周的七天记录；切换归档周时，素材范围也随之切换。文件含学习内容，交给外部
               AI 前请检查。
             </p>
           </section>
@@ -194,7 +199,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
                         ...data,
                         reviewDrafts: {
                           ...data.reviewDrafts,
-                          [week]: e.target.value,
+                          [archiveWeek]: e.target.value,
                         },
                       },
                       "复盘草稿已自动保存在本机；点击保存后加入历史周复盘。",
@@ -205,9 +210,9 @@ export default function Weekly({ data, commit, onOpenDay }) {
             )}
             <div className="gw-form-bottom">
               <span>
-                {data.reviewDrafts[week] !== undefined
+                {data.reviewDrafts[archiveWeek] !== undefined
                   ? "有草稿待保存"
-                  : data.weekly[week]
+                  : data.weekly[archiveWeek]
                     ? "已保存到本周记录"
                     : "尚未保存复盘"}{" "}
                 · 本机预览
@@ -237,12 +242,13 @@ export default function Weekly({ data, commit, onOpenDay }) {
               {history.map(([w, e]) => (
                 <button
                   key={w}
-                  className={w === week ? "active" : ""}
-                  onClick={() => select(w)}
+                  className={w === archiveWeek ? "active" : ""}
+                  onClick={() => select(e.sourceWeek || shiftWeek(w, -1))}
                 >
                   <strong>{w}</strong>
                   <span>
-                    {weekRange(w).start} — {weekRange(w).end}
+                    回顾：{weekRange(e.sourceWeek || shiftWeek(w, -1)).start} —{" "}
+                    {weekRange(e.sourceWeek || shiftWeek(w, -1)).end}
                   </span>
                   <small>{e.text.replace(/[#*`]/g, "").slice(0, 60)}</small>
                 </button>
@@ -257,9 +263,9 @@ export default function Weekly({ data, commit, onOpenDay }) {
         <section className="gw-note">
           <span className="gw-eyebrow">每日记录是复盘的原料</span>
           <h3>想补充某天的记录？</h3>
-          <p>回到这一周的每日记录，补充学习收获和卡点，再重新导出。</p>
+          <p>回到素材周的每日记录，补充学习收获和卡点，再重新导出。</p>
           <button onClick={() => onOpenDay(range.start)}>
-            打开本周一记录 →
+            打开素材周一记录 →
           </button>
         </section>
       </aside>

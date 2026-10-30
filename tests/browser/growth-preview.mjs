@@ -142,7 +142,7 @@ try {
     "记住了 30 个词，完成一组听力。",
   );
   await nav("每周复盘").click();
-  await page.getByText(dates.week, { exact: true }).waitFor();
+  await page.getByText(dates.current, { exact: true }).waitFor();
   await page.getByRole("button", { name: "查看导出内容", exact: true }).click();
   let digest = await page
     .getByLabel("交给 AI 的完整内容（预览示例）")
@@ -177,6 +177,10 @@ try {
   await page.getByRole("button", { name: "保存本周复盘" }).click();
   await page.getByRole("button", { name: "阅读预览", exact: true }).click();
   await page.getByRole("heading", { name: "上周复盘", exact: true }).waitFor();
+  const savedWeekly = await page.evaluate(
+    () => JSON.parse(localStorage.getItem("growth-workbench-demo-v1")).weekly,
+  );
+  assert.equal(savedWeekly[dates.current].sourceWeek, dates.week);
   await shot("desktop-review");
   await page.getByRole("button", { name: "下一周", exact: true }).click();
   await page.getByLabel("粘贴 AI 生成的周复盘").fill("本周独立草稿");
@@ -188,7 +192,7 @@ try {
   );
   await page.reload();
   await nav("每周复盘").click();
-  await page.getByRole("button", { name: "查看本周", exact: true }).click();
+  await page.getByRole("button", { name: "下一周", exact: true }).click();
   assert.equal(
     await page.getByLabel("粘贴 AI 生成的周复盘").inputValue(),
     "本周独立草稿",
@@ -201,7 +205,7 @@ try {
   assert.equal((digest.match(/（这天没有记录）/g) || []).length, 7);
   await shot("desktop-empty-week");
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole("button", { name: "回到上周", exact: true }).click();
+  await page.getByRole("button", { name: "回到本周", exact: true }).click();
   await shot("mobile-review");
   await page.getByRole("button", { name: "阅读预览", exact: true }).click();
   await shot("mobile-review-reading");
