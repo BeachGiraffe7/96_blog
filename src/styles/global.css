@@ -4464,3 +4464,7 @@ button {
 .alert-retry:hover {
   opacity: 1;
 }
+
+/* Management mutations are mutually exclusive; make the disabled state visible. */
+.manage-card .manage-btn:disabled,
+.manage-card .write-btn:disabled { opacity: .5; cursor: wait; }

@@ -23,7 +23,8 @@ export async function deleteMoment({ token, moment }) {
     path: site.momentsPath,
     token,
     message: `moments: 删除 ${moment.date} ${normText(moment.text).slice(0, 16)}`,
-    update: (raw) => removeMomentBlock(raw, moment),
+    // A second tab may have already removed it: a no-op is success, not a stale rewrite.
+    update: (raw) => removeMomentBlock(raw, moment) ?? raw,
   });
 }
 
