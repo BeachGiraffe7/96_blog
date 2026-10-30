@@ -2,79 +2,37 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../components/Icons";
 import "../styles/growth-preview.css";
+import { localDate, shiftDate, readDay, DAY_PARTS } from "../data/growth";
+import {
+  PREVIEW_KEY,
+  seedPreview,
+  migratePreview,
+  taskProject,
+} from "../lib/growthPreview";
+import Projects from "../components/growth-preview/Projects";
+import Weekly from "../components/growth-preview/Weekly";
 
-const KEY = "growth-workbench-demo-v1";
-const seed = () => ({
-  tasks: [
-    {
-      id: "a",
-      text: "跑通一次机械臂逆运动学示例",
-      project: "机械臂",
-      done: false,
-    },
-    {
-      id: "b",
-      text: "整理视觉识别实验的失败原因",
-      project: "机器视觉",
-      done: false,
-    },
-    {
-      id: "c",
-      text: "优化博客的文章阅读体验",
-      project: "个人网站",
-      done: true,
-    },
-  ],
-  wins: [
-    {
-      text: "把时钟树笔记整理成了可以复用的实验记录。",
-      project: "个人网站",
-      sample: true,
-    },
-  ],
-  reviews: { win: "", stuck: "", next: "" },
-  energy: "平稳",
-});
-const projects = [
-  {
-    name: "机械臂",
-    desc: "从公式走到一次真实运动",
-    stage: "验证中",
-    next: "跑通逆运动学 → 记录误差 → 实机验证",
-    output: "运动学实验记录",
-    num: "01",
-  },
-  {
-    name: "机器视觉",
-    desc: "让每次实验都有可比较的结论",
-    stage: "探索中",
-    next: "整理失败样本 → 对比光照条件 → 调整方案",
-    output: "识别实验对照表",
-    num: "02",
-  },
-  {
-    name: "个人网站",
-    desc: "把学习沉淀为能被读懂的内容",
-    stage: "持续迭代",
-    next: "优化阅读体验 → 整理文章 → 发布总结",
-    output: "一篇可复用的技术文章",
-    num: "03",
-  },
-];
+const KEY = PREVIEW_KEY;
 function restore() {
   try {
-    const d = JSON.parse(localStorage.getItem(KEY));
-    if (d?.tasks && d?.reviews && d?.wins) return d;
+    return migratePreview(JSON.parse(localStorage.getItem(KEY)));
   } catch {
-    /* local demo only */
+    return seedPreview();
   }
-  return seed();
 }
 export default function GrowthPreview() {
   const [data, setData] = useState(restore);
   const [tab, setTab] = useState("today");
   const [draft, setDraft] = useState("");
-  const [project, setProject] = useState("机械臂");
+  const [project, setProject] = useState("");
+  const [date, setDate] = useState(localDate);
+  const projects = data.projects;
+  const day = readDay(data.days[date]);
+  const selectedProject = projects.some((p) => p.id === project) ? project : "";
+  const withDay = (patch) => ({
+    ...data,
+    days: { ...data.days, [date]: { ...day, ...patch } },
+  });
   const [filter, setFilter] = useState("全部");
   const [win, setWin] = useState("");
   const [notice, setNotice] = useState("");
@@ -92,14 +50,13 @@ export default function GrowthPreview() {
     setNotice(message || "");
   };
   const toggle = (id) => {
-    const task = data.tasks.find((t) => t.id === id);
+    const task = day.tasks.find((t) => t.id === id);
     commit(
-      {
-        ...data,
-        tasks: data.tasks.map((t) =>
+      withDay({
+        tasks: day.tasks.map((t) =>
           t.id === id ? { ...t, done: !t.done } : t,
         ),
-      },
+      }),
       task.done ? "已恢复为待办" : "完成了一步。做得不错！",
       true,
     );
@@ -108,13 +65,19 @@ export default function GrowthPreview() {
     e.preventDefault();
     if (!draft.trim()) return;
     commit(
-      {
-        ...data,
+      withDay({
         tasks: [
-          ...data.tasks,
-          { id: crypto.randomUUID(), text: draft.trim(), project, done: false },
+          ...day.tasks,
+          {
+            id: crypto.randomUUID(),
+            text: draft.trim(),
+            projectId: selectedProject,
+            project:
+              projects.find((p) => p.id === selectedProject)?.name || "未分类",
+            done: false,
+          },
         ],
-      },
+      }),
       "行动已加入今日",
     );
     setDraft("");
@@ -125,14 +88,14 @@ export default function GrowthPreview() {
     commit(
       {
         ...data,
-        wins: [{ text: win.trim(), project: "今日成果" }, ...data.wins],
+        wins: [{ text: win.trim(), project: "每日成果", date }, ...data.wins],
       },
       "成果已保存在本机预览中",
     );
     setWin("");
   };
-  const complete = data.tasks.filter((t) => t.done).length;
-  const shown = data.tasks.filter(
+  const complete = day.tasks.filter((t) => t.done).length;
+  const shown = day.tasks.filter(
     (t) => filter === "全部" || (filter === "待完成" ? !t.done : t.done),
   );
   return (
@@ -149,7 +112,9 @@ export default function GrowthPreview() {
                 "恢复示例数据？这会清除本机的预览修改，不影响正式记录。",
               )
             ) {
-              commit(seed(), "已恢复示例");
+              commit(seedPreview(), "已恢复示例");
+              setProject("");
+              setDate(localDate());
               setUndo(null);
             }
           }}
@@ -219,27 +184,51 @@ export default function GrowthPreview() {
         {tab === "today" && (
           <div className="gw-grid">
             <main>
-              <section className="gw-focus">
-                <span className="gw-eyebrow">今天最重要的一步</span>
-                <h2>让学习，落到一次具体的实践。</h2>
-                <p>先做一个能验证的小实验，再把结论留下来。</p>
-                <button
-                  onClick={() =>
-                    document.getElementById("gw-new-task")?.focus()
-                  }
-                >
-                  ＋ 拆成一个小行动
-                </button>
-                <span className="gw-focus-mark" aria-hidden="true">
-                  01
-                </span>
+              <section className="gw-card gw-day-nav">
+                <div>
+                  <span className="gw-eyebrow">每天记一点，周末交给 AI</span>
+                  <h2>每日学习记录</h2>
+                </div>
+                <div className="gw-date-controls">
+                  <button
+                    className="gw-outline"
+                    aria-label="前一天"
+                    onClick={() => setDate(shiftDate(date, -1))}
+                  >
+                    ‹
+                  </button>
+                  <label>
+                    <span className="gw-sr">记录日期</span>
+                    <input
+                      type="date"
+                      value={date}
+                      required
+                      onChange={(e) => {
+                        if (e.target.value) setDate(e.target.value);
+                      }}
+                    />
+                  </label>
+                  <button
+                    className="gw-outline"
+                    aria-label="后一天"
+                    onClick={() => setDate(shiftDate(date, 1))}
+                  >
+                    ›
+                  </button>
+                  <button
+                    className="gw-text-button"
+                    onClick={() => setDate(localDate())}
+                  >
+                    今天
+                  </button>
+                </div>
               </section>
               <section className="gw-card gw-tasks">
                 <div className="gw-section-head">
                   <div>
                     <h2>今日行动</h2>
                     <p>
-                      完成 {complete} / {data.tasks.length} 项 ·
+                      完成 {complete} / {day.tasks.length} 项 ·
                       少一点计划，多一点推进
                     </p>
                   </div>
@@ -272,17 +261,56 @@ export default function GrowthPreview() {
                       </label>
                       <div className="gw-task-body">
                         <span className="gw-task-text">{t.text}</span>
-                        <span className="gw-project-label">{t.project}</span>
+                        <select
+                          className="gw-task-category"
+                          aria-label={`调整分类：${t.text}`}
+                          value={
+                            t.projectId &&
+                            !projects.some((p) => p.id === t.projectId)
+                              ? "__deleted"
+                              : t.projectId || ""
+                          }
+                          onChange={(e) => {
+                            const id = e.target.value;
+                            const p = projects.find((p) => p.id === id);
+                            commit(
+                              withDay({
+                                tasks: day.tasks.map((x) =>
+                                  x.id === t.id
+                                    ? {
+                                        ...x,
+                                        projectId: id,
+                                        project: p?.name || "未分类",
+                                      }
+                                    : x,
+                                ),
+                              }),
+                              "任务分类已更新。",
+                            );
+                          }}
+                        >
+                          {t.projectId &&
+                            !projects.some((p) => p.id === t.projectId) && (
+                              <option value="__deleted" disabled>
+                                {taskProject(t, projects)}
+                              </option>
+                            )}
+                          <option value="">未分类</option>
+                          {projects.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <button
                         className="gw-delete"
                         aria-label={`删除：${t.text}`}
                         onClick={() =>
                           commit(
-                            {
-                              ...data,
-                              tasks: data.tasks.filter((x) => x.id !== t.id),
-                            },
+                            withDay({
+                              tasks: day.tasks.filter((x) => x.id !== t.id),
+                            }),
                             "已删除行动，可撤销",
                             true,
                           )
@@ -318,17 +346,54 @@ export default function GrowthPreview() {
                   </label>
                   <select
                     id="gw-project"
-                    value={project}
+                    value={selectedProject}
                     onChange={(e) => setProject(e.target.value)}
                   >
+                    <option value="">未分类</option>
                     {projects.map((p) => (
-                      <option key={p.name}>{p.name}</option>
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
                     ))}
                   </select>
                   <button className="gw-primary" disabled={!draft.trim()}>
                     添加
                   </button>
                 </form>
+                <button
+                  className="gw-text-button"
+                  onClick={() => setTab("projects")}
+                >
+                  ＋ 新建分类（长期项目）
+                </button>
+              </section>
+              <section className="gw-card">
+                <div className="gw-section-head">
+                  <div>
+                    <h2>每日学习记录</h2>
+                    <p>
+                      沿用原本的记录方式；内容会随日期保留，并进入所选周的导出文件。
+                    </p>
+                  </div>
+                  <span className="gw-small-tag">本机自动保存</span>
+                </div>
+                {DAY_PARTS.map((part) => (
+                  <label className="gw-review-field" key={part.key}>
+                    <span>{part.label}</span>
+                    <textarea
+                      aria-label={part.label}
+                      value={day[part.key]}
+                      placeholder={part.placeholder}
+                      maxLength={10000}
+                      onChange={(e) =>
+                        commit(
+                          withDay({ [part.key]: e.target.value }),
+                          "每日学习记录已保存在本机预览中，可按周导出。",
+                        )
+                      }
+                    />
+                  </label>
+                ))}
               </section>
               <section className="gw-card">
                 <div className="gw-section-head">
@@ -394,9 +459,11 @@ export default function GrowthPreview() {
                   </button>
                 </div>
                 <div className="gw-project-mini">
-                  {projects.map((p) => (
-                    <button key={p.name} onClick={() => setTab("projects")}>
-                      <span className="gw-project-num">{p.num}</span>
+                  {projects.map((p, i) => (
+                    <button key={p.id} onClick={() => setTab("projects")}>
+                      <span className="gw-project-num">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                       <span>
                         <strong>{p.name}</strong>
                         <small>{p.output}</small>
@@ -405,6 +472,12 @@ export default function GrowthPreview() {
                     </button>
                   ))}
                 </div>
+                <button
+                  className="gw-text-button"
+                  onClick={() => setTab("projects")}
+                >
+                  ＋ 管理长期项目与分类
+                </button>
               </section>
               <section className="gw-note">
                 <span className="gw-eyebrow">给未来的自己</span>
@@ -414,112 +487,53 @@ export default function GrowthPreview() {
                   留下来的理解才是。
                 </p>
                 <button onClick={() => setTab("review")}>
-                  留十分钟，回看这一周 <span aria-hidden="true">→</span>
+                  导出七天记录，让 AI 帮你复盘 <span aria-hidden="true">→</span>
                 </button>
               </section>
             </aside>
           </div>
         )}
         {tab === "projects" && (
-          <main className="gw-tab-content">
-            <div className="gw-tab-heading">
-              <h2>让每天的小事，有一个长期方向。</h2>
-              <p>
-                项目不只是一串任务，更应该有下一步和看得见的产出。以下为示例项目。
-              </p>
-            </div>
-            <div className="gw-project-grid">
-              {projects.map((p) => (
-                <section className="gw-card gw-project-card" key={p.name}>
-                  <div className="gw-section-head">
-                    <span className="gw-project-num">{p.num}</span>
-                    <span className="gw-small-tag">{p.stage}</span>
-                  </div>
-                  <h3>{p.name}</h3>
-                  <p>{p.desc}</p>
-                  <h4>下一步路径</h4>
-                  <p>{p.next}</p>
-                  <h4>希望留下的成果</h4>
-                  <p>{p.output}</p>
-                  <div className="gw-project-actions">
-                    <span>
-                      {
-                        data.tasks.filter(
-                          (t) => t.project === p.name && !t.done,
-                        ).length
-                      }{" "}
-                      项待行动
-                    </span>
-                    <button
-                      className="gw-primary"
-                      onClick={() => {
-                        setProject(p.name);
-                        setTab("today");
-                        setTimeout(
-                          () => document.getElementById("gw-new-task")?.focus(),
-                          0,
-                        );
-                      }}
-                    >
-                      安排一个行动
-                    </button>
-                  </div>
-                </section>
-              ))}
-            </div>
-            <p className="gw-footnote">
-              本轮先验证「项目 → 行动 →
-              成果」的组织方式；项目编辑、里程碑与正式数据接入暂未实现。
-            </p>
-          </main>
+          <Projects
+            projects={projects}
+            days={data.days}
+            onSave={(p) =>
+              commit(
+                {
+                  ...data,
+                  projects: projects.some((x) => x.id === p.id)
+                    ? projects.map((x) => (x.id === p.id ? p : x))
+                    : [...projects, p],
+                },
+                "项目已保存，任务分类已同步更新。",
+              )
+            }
+            onDelete={(id) =>
+              commit(
+                { ...data, projects: projects.filter((p) => p.id !== id) },
+                "项目已删除；已有任务和历史记录已保留。",
+                true,
+              )
+            }
+            onAction={(id) => {
+              setProject(id);
+              setTab("today");
+              setTimeout(
+                () => document.getElementById("gw-new-task")?.focus(),
+                0,
+              );
+            }}
+          />
         )}
         {tab === "review" && (
-          <main className="gw-review-layout">
-            <section className="gw-card">
-              <span className="gw-eyebrow">WEEKLY REFLECTION</span>
-              <h2>不打分，只复盘。</h2>
-              <p className="gw-muted">
-                复盘不是统计自己有多努力，而是找到下一步更好的做法。
-              </p>
-              {[
-                ["win", "这周，哪一步真的有效？", "写下一件有具体证据的进展。"],
-                ["stuck", "卡在哪里？", "是任务太大、方法不对，还是精力不够？"],
-                [
-                  "next",
-                  "下周，只改变一件事。",
-                  "把调整写成一个能执行的小动作。",
-                ],
-              ].map(([key, label, placeholder]) => (
-                <label className="gw-review-field" key={key}>
-                  <span>{label}</span>
-                  <textarea
-                    placeholder={placeholder}
-                    value={data.reviews[key]}
-                    onChange={(e) =>
-                      commit(
-                        {
-                          ...data,
-                          reviews: { ...data.reviews, [key]: e.target.value },
-                        },
-                        "复盘草稿已自动保存在本机预览中",
-                      )
-                    }
-                    maxLength={3000}
-                  />
-                </label>
-              ))}
-            </section>
-            <aside className="gw-note">
-              <span className="gw-eyebrow">从记录里找证据</span>
-              <h3>回看最近的成果</h3>
-              {data.wins.length ? (
-                data.wins.slice(0, 3).map((w, i) => <p key={i}>{w.text}</p>)
-              ) : (
-                <p>还没有成果记录。先去今日行动留下一条收获。</p>
-              )}
-              <p className="gw-muted">此处仅演示复盘流程，不是你的真实周报。</p>
-            </aside>
-          </main>
+          <Weekly
+            data={data}
+            commit={commit}
+            onOpenDay={(d) => {
+              setDate(d);
+              setTab("today");
+            }}
+          />
         )}
         {tab === "archive" && (
           <main className="gw-tab-content">
@@ -533,7 +547,10 @@ export default function GrowthPreview() {
               {data.wins.map((w, i) => (
                 <article className="gw-card" key={i}>
                   <div className="gw-section-head">
-                    <span className="gw-small-tag">{w.project}</span>
+                    <span className="gw-small-tag">
+                      {w.project}
+                      {w.date ? ` · ${w.date}` : ""}
+                    </span>
                     <span className="gw-muted">
                       {w.sample ? "示例记录" : "本机预览记录"}
                     </span>
