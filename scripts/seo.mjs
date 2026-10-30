@@ -317,6 +317,15 @@ async function main() {
     extra: '<meta name="robots" content="noindex, nofollow" />',
   }))
 
+  // 独立交互预览：只有示例数据，不纳入站点索引。
+  await writePage('growth-preview', build('growth-preview', {
+    title: `成长工作台预览 · ${site.name}`,
+    description: '独立设计预览，全部为示例数据。',
+    url: `${base}/growth-preview`,
+    image: `${base}/og/default.png`,
+    extra: '<meta name="robots" content="noindex, nofollow" />',
+  }))
+
   // ---------- 3. sitemap / robots / RSS ----------
   const urls = [
     { loc: `${base}/`, lastmod: newest[0]?.date },

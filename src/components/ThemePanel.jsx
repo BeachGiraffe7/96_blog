@@ -86,7 +86,7 @@ export default function ThemePanel({ onClose }) {
                 style={{ background: p.bg }}
                 aria-pressed={active}
                 title={p.label}
-                onClick={() => setPaletteState(setPalette(p.id))}
+                onClick={() => { setPalette(p.id); setPaletteState(p.id) }}
               >
                 <span className="palette-band" style={{ background: p.accent }}>
                   {p.label}

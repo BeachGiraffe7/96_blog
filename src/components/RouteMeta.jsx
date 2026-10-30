@@ -84,6 +84,9 @@ export default function RouteMeta() {
     } else if (pathname === '/write') {
       title = `写一条 · ${site.name}`
       desc = '发布碎碎念的编辑页。'
+    } else if (pathname === '/growth-preview') {
+      title = `成长工作台预览 · ${site.name}`
+      desc = '独立设计预览，全部为示例数据。'
     } else if (pathname === '/growth') {
       title = `成长 · ${site.name}`
       desc = ''
@@ -91,7 +94,7 @@ export default function RouteMeta() {
 
     document.title = title
     setMeta('description', desc)
-    setRobots(pathname === '/write' || pathname === '/growth' ? 'noindex, nofollow' : '')
+    setRobots(pathname === '/write' || pathname === '/growth' || pathname === '/growth-preview' ? 'noindex, nofollow' : '')
     setCanonical(`${base}${pathname === '/' ? '/' : pathname}`)
   }, [pathname])
 

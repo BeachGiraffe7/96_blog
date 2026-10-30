@@ -13,6 +13,7 @@ const About = lazy(() => import('./pages/About'))
 const Moments = lazy(() => import('./pages/Moments'))
 const Write = lazy(() => import('./pages/Write'))
 const Growth = lazy(() => import('./pages/Growth'))
+const GrowthPreview = lazy(() => import('./pages/GrowthPreview'))
 const PostDetail = lazy(() => import('./pages/PostDetail'))
 const SeriesPage = lazy(() => import('./pages/Series'))
 
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/write" element={<Write />} />
           {/* 成长专栏：私密页，独立壳 + 密码解锁 */}
           <Route path="/growth" element={<Growth />} />
+          <Route path="/growth-preview" element={<GrowthPreview />} />
           <Route element={<Layout query={query} onQueryChange={setQuery} />}>
             <Route path="/" element={<Home />} />
             <Route path="/category/:name" element={<Home mode="category" />} />
