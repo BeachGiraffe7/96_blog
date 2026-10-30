@@ -4,7 +4,11 @@
  * 只处理常见语义结构，不做像素级还原。
  */
 
-const SKIP = new Set(['SCRIPT', 'STYLE', 'META', 'LINK', 'NOSCRIPT', 'SVG', 'BUTTON', 'INPUT'])
+const SKIP = new Set([
+  'SCRIPT', 'STYLE', 'META', 'LINK', 'NOSCRIPT', 'SVG',
+  // 界面控件不该变成正文：实验台这类页面的下拉选项会塞满整篇文章
+  'BUTTON', 'INPUT', 'SELECT', 'OPTION', 'OPTGROUP', 'TEXTAREA', 'IFRAME', 'CANVAS',
+])
 
 // 只做行内处理的标签：出现在同一段里，不该被拆成块
 const INLINE = new Set([
@@ -54,7 +58,10 @@ function inline(node) {
     case 'A': {
       const href = node.getAttribute('href') || ''
       const t = inner.trim() || href
-      return href ? `[${t}](${href})` : t
+      if (!href) return t
+      // 相对路径多半指向原文档同目录的本地文件，搬到博客上就是死链，只保留文字
+      if (!/^(https?:|mailto:|tel:|\/)/i.test(href)) return t
+      return `[${t}](${href})`
     }
     case 'IMG':
       return imageMd(node)

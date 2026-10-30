@@ -36,10 +36,32 @@ const stripInlineImages = (md) =>
     )
     .replace(/<img[^>]*src=["']data:[^"']*["'][^>]*>/gi, '<!-- 文档内图片需手动上传 -->')
 
+// 动态 import 失败（网络抖动、部署后旧页面）重试几次：这类错误重试通常就能过
+const isModuleLoadError = (e) =>
+  /dynamically imported module|module script failed|Failed to fetch|NetworkError/i.test(
+    String(e && e.message),
+  )
+
+async function loadWithRetry(loader, label) {
+  let last
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      return await loader()
+    } catch (e) {
+      last = e
+      if (!isModuleLoadError(e)) throw e
+      await new Promise((r) => setTimeout(r, 500 * (i + 1)))
+    }
+  }
+  throw new Error(
+    `${label}没下载下来（网络中断或刚部署完缓存还旧）——再点一次导入，或刷新页面重试`,
+  )
+}
+
 // ---------- Word ----------
 
 async function docxToMarkdown(file) {
-  const mammoth = await import('mammoth')
+  const mammoth = await loadWithRetry(() => import('mammoth'), 'Word 解析器')
   const mod = mammoth.default || mammoth
   const { value: html } = await mod.convertToHtml({
     arrayBuffer: await file.arrayBuffer(),
@@ -55,11 +77,17 @@ let pdfjsPromise = null
 async function getPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = (async () => {
-      const pdfjs = await import('pdfjs-dist')
-      const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+      const pdfjs = await loadWithRetry(() => import('pdfjs-dist'), 'PDF 解析器')
+      const worker = await loadWithRetry(
+        () => import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+        'PDF worker',
+      )
       pdfjs.GlobalWorkerOptions.workerSrc = worker.default
       return pdfjs
-    })()
+    })().catch((e) => {
+      pdfjsPromise = null // 失败就清缓存，下次还能重试
+      throw e
+    })
   }
   return pdfjsPromise
 }

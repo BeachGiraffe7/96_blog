@@ -4408,3 +4408,59 @@ button {
     display: none;
   }
 }
+
+/* 导入失败的提示条里放重试按钮 */
+.write-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.write-alert > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-retry {
+  flex: none;
+  padding: 5px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.alert-retry:hover {
+  opacity: 1;
+}
+
+/* 导入失败的提示条里放重试按钮 */
+.write-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.write-alert > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-retry {
+  flex: none;
+  padding: 5px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.alert-retry:hover {
+  opacity: 1;
+}

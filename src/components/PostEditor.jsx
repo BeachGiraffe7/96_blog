@@ -60,6 +60,7 @@ export default function PostEditor({ token, onPublished }) {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [importing, setImporting] = useState('')
+  const [failedFiles, setFailedFiles] = useState([])
   const areaRef = useRef(null)
   const fileRef = useRef(null)
 
@@ -109,41 +110,42 @@ export default function PostEditor({ token, onPublished }) {
     }
   }
 
-  const onImport = async (e) => {
-    const files = [...(e.target.files || [])]
-    e.target.value = ''
+  const runImport = async (files) => {
     if (!files.length) return
 
     setError('')
     setNotice('')
+    setFailedFiles([])
     const results = []
     const warnings = []
+    const failed = []
 
-    try {
-      for (let i = 0; i < files.length; i += 1) {
-        setImporting(files.length > 1 ? `${i + 1}/${files.length}　${files[i].name}` : files[i].name)
+    // 逐文件 try/catch：一个文件失败不能把已经转好的其他文件也丢掉
+    for (let i = 0; i < files.length; i += 1) {
+      setImporting(files.length > 1 ? `${i + 1}/${files.length}　${files[i].name}` : files[i].name)
+      try {
         const r = await fileToMarkdown(files[i])
         const text = (r.markdown || '').trim()
         if (text) results.push({ name: files[i].name, text })
         else warnings.push(`${files[i].name} 里没读到内容`)
         for (const w of r.warnings || []) warnings.push(`${files[i].name}：${w}`)
+      } catch (err) {
+        failed.push({ file: files[i], msg: String(err.message || err) })
       }
-    } catch (err) {
-      setImporting('')
-      setError(`导入失败：${err.message || err}`)
-      return
     }
     setImporting('')
+
+    if (failed.length) {
+      setError(`没导入成功：${failed.map((f) => `${f.file.name}：${f.msg}`).join('；')}`)
+      setFailedFiles(failed.map((f) => f.file))
+    }
 
     const flash = (msg) => {
       setNotice([msg, ...warnings].join('　|　'))
       window.setTimeout(() => setNotice(''), 8000)
     }
 
-    if (!results.length) {
-      flash('没有可导入的内容')
-      return
-    }
+    if (!results.length) return
 
     // 单个 .md 且正文还是空的：沿用原来的「整体导入 + frontmatter 填表」
     const single = results.length === 1 && files.length === 1
@@ -166,6 +168,12 @@ export default function PostEditor({ token, onPublished }) {
     )
     setBody([body.trim(), ...chunks].filter(Boolean).join('\n\n---\n\n'))
     flash(`已导入 ${results.length} 个文件，内容追加到正文末尾`)
+  }
+
+  const onImport = async (e) => {
+    const files = [...(e.target.files || [])]
+    e.target.value = ''
+    await runImport(files)
   }
 
   const publish = async () => {
@@ -238,7 +246,16 @@ export default function PostEditor({ token, onPublished }) {
 
   return (
     <>
-      {error && <div className="write-alert error">{error}</div>}
+      {error && (
+        <div className="write-alert error">
+          <span>{error}</span>
+          {failedFiles.length > 0 && (
+            <button type="button" className="alert-retry" onClick={() => runImport(failedFiles)}>
+              重试这 {failedFiles.length} 个文件
+            </button>
+          )}
+        </div>
+      )}
       {notice && <div className="write-alert ok">{notice}</div>}
 
       <section className="write-card">
