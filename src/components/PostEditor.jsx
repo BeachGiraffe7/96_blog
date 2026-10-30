@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { categories, series, site } from '../data/posts'
 import { readFile, writeFile } from '../lib/github'
 import { htmlToMarkdown, looksRich } from '../lib/htmlToMarkdown'
+import { fileToMarkdown, IMPORT_ACCEPT, IMPORT_HINT } from '../lib/importDocs'
 import Markdown from './Markdown'
 import { Icon } from './Icons'
 
@@ -58,6 +59,7 @@ export default function PostEditor({ token, onPublished }) {
   const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [importing, setImporting] = useState('')
   const areaRef = useRef(null)
   const fileRef = useRef(null)
 
@@ -107,24 +109,63 @@ export default function PostEditor({ token, onPublished }) {
     }
   }
 
-  const onImport = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const raw = String(reader.result || '')
-      const { meta, body: content } = splitFrontMatter(raw)
+  const onImport = async (e) => {
+    const files = [...(e.target.files || [])]
+    e.target.value = ''
+    if (!files.length) return
+
+    setError('')
+    setNotice('')
+    const results = []
+    const warnings = []
+
+    try {
+      for (let i = 0; i < files.length; i += 1) {
+        setImporting(files.length > 1 ? `${i + 1}/${files.length}　${files[i].name}` : files[i].name)
+        const r = await fileToMarkdown(files[i])
+        const text = (r.markdown || '').trim()
+        if (text) results.push({ name: files[i].name, text })
+        else warnings.push(`${files[i].name} 里没读到内容`)
+        for (const w of r.warnings || []) warnings.push(`${files[i].name}：${w}`)
+      }
+    } catch (err) {
+      setImporting('')
+      setError(`导入失败：${err.message || err}`)
+      return
+    }
+    setImporting('')
+
+    const flash = (msg) => {
+      setNotice([msg, ...warnings].join('　|　'))
+      window.setTimeout(() => setNotice(''), 8000)
+    }
+
+    if (!results.length) {
+      flash('没有可导入的内容')
+      return
+    }
+
+    // 单个 .md 且正文还是空的：沿用原来的「整体导入 + frontmatter 填表」
+    const single = results.length === 1 && files.length === 1
+    if (single && /\.(md|markdown)$/i.test(files[0].name) && !body.trim()) {
+      const { meta, body: content } = splitFrontMatter(results[0].text)
       setBody(content.trim())
       if (meta?.title) setTitle(meta.title)
-      if (meta?.date) setNotice(`导入完成（frontmatter 里的日期是 ${meta.date}）`)
-      else setNotice(`已导入 ${file.name}`)
       if (meta?.category) setCategory(meta.category)
-      if (meta?.tags) setTagText(meta.tags.replace(/^\[|\]$/g, '').replace(/["']/g, ''))
+      if (meta?.tags) {
+        setTagText(meta.tags.replace(/^\[|\]$/g, '').replace(/["']/g, ''))
+      }
       if (meta?.excerpt || meta?.description) setExcerpt(meta.excerpt || meta.description)
-      setTimeout(() => setNotice(''), 5000)
+      flash(meta?.date ? `已导入 ${files[0].name}（frontmatter 日期 ${meta.date}）` : `已导入 ${files[0].name}`)
+      return
     }
-    reader.readAsText(file)
-    e.target.value = ''
+
+    // 其余情况一律「追加」：可以多个文件，也可以和手写内容混在一篇里
+    const chunks = results.map((r) =>
+      body.trim() || results.length > 1 ? `<!-- 导入自 ${r.name} -->\n\n${r.text}` : r.text,
+    )
+    setBody([body.trim(), ...chunks].filter(Boolean).join('\n\n---\n\n'))
+    flash(`已导入 ${results.length} 个文件，内容追加到正文末尾`)
   }
 
   const publish = async () => {
@@ -286,13 +327,20 @@ export default function PostEditor({ token, onPublished }) {
         <div className="pe-toolbar">
           <span className="pe-tool-label">正文</span>
           <div className="pe-tools">
-            <button type="button" className="pe-tool" onClick={() => fileRef.current?.click()}>
-              <Icon.arrowUp /> 导入 .md
+            <button
+              type="button"
+              className="pe-tool"
+              onClick={() => fileRef.current?.click()}
+              disabled={Boolean(importing)}
+              title={IMPORT_HINT}
+            >
+              <Icon.arrowUp /> {importing ? '解析中…' : '导入文件'}
             </button>
             <input
               ref={fileRef}
               type="file"
-              accept=".md,.markdown,.txt"
+              accept={IMPORT_ACCEPT}
+              multiple
               onChange={onImport}
               hidden
             />
@@ -319,7 +367,7 @@ export default function PostEditor({ token, onPublished }) {
             onChange={(e) => setBody(e.target.value)}
             onPaste={onPaste}
             placeholder={
-              '直接从飞书复制正文粘进来，会自动转成 Markdown。\n\n也可以拖一个 .md 文件进来（点上面的「导入 .md」）。'
+              '直接从飞书复制正文粘进来，会自动转成 Markdown。\n\n也可以点上方「导入文件」，把 Word / PDF / HTML / Markdown 转成正文——多个文件会按顺序追加，能和手写内容混在一篇里。'
             }
             rows={18}
           />
