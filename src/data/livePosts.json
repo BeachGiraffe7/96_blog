@@ -1,5 +1,24 @@
 [
   {
+    "slug": "post-20261030-05b9p",
+    "title": "视觉导学",
+    "category": "机器人",
+    "series": "机器视觉",
+    "date": "2026-10-30",
+    "views": 0,
+    "words": 2912,
+    "tags": [
+      "视觉",
+      "opencv",
+      "yolo"
+    ],
+    "excerpt": "本文档旨在列出一些在工创赛物流视觉当中的关键操作，方便大家直接跟着AI动手实践。 本文档只做技能点的速通，对于工程化经验不作追求，这方面自己得多实践。",
+    "hasBody": true,
+    "cover": "",
+    "contentType": "article-v1",
+    "articlePath": "/articles/post-20261030-05b9p/article.json"
+  },
+  {
     "slug": "stm32-clock-notes",
     "title": "STM32时钟树：我的理解与动手验证",
     "category": "嵌入式",
