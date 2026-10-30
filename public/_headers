@@ -1,0 +1,7 @@
+# Raw interactive HTML is deliberately stored as .html.txt, never executable same-origin HTML.
+/articles/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+
+/articles/*.html.txt
+  Content-Type: text/plain; charset=utf-8
