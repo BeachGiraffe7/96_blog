@@ -398,7 +398,7 @@
 .gw input,
 .gw select,
 .gw textarea {
-  border: 1px solid #a7b3a8;
+  border: 1px solid #859485;
   border-radius: 8px;
   padding: 10px 12px;
   background: var(--gw-paper);
@@ -467,7 +467,7 @@
   padding: 8px 4px;
   font-size: 14px;
   background: none;
-  border: 1px solid #a7b3a8;
+  border: 1px solid #859485;
   border-radius: 8px;
   color: var(--gw-muted);
 }
@@ -842,5 +842,11 @@
   }
 }
 
-.gw-card.gw-empty { padding: 24px; }
-@media (prefers-color-scheme: dark) { .gw-brand-icon { color: #18221e; } }
+.gw-card.gw-empty {
+  padding: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  .gw-brand-icon {
+    color: #18221e;
+  }
+}
