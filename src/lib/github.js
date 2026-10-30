@@ -67,6 +67,7 @@ const decodeB64 = (b64) => {
 const TIMEOUT = 15000;
 const request = (url, options = {}) => {
   const opt = { ...options };
+  if ((opt.method || "GET") === "GET") opt.cache = "no-store";
   if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
     opt.signal = AbortSignal.timeout(TIMEOUT);
   }
@@ -82,13 +83,17 @@ async function handle(res) {
   } catch {
     detail = res.statusText;
   }
-  if (res.status === 401) throw new Error("token 无效或已过期，请重新生成");
-  if (res.status === 403)
-    throw new Error("没有权限：确认 token 勾选了该仓库的 Contents 读写");
-  if (res.status === 404)
-    throw new Error("找不到仓库或文件：检查仓库名和 token 权限");
-  if (res.status === 409) throw new Error("冲突：文件刚被改过，请重试一次");
-  throw new Error(detail || `请求失败（${res.status}）`);
+  const messages = {
+    401: "token 无效或已过期，请重新连接",
+    403: "没有权限：确认 token 已授予该仓库 Contents 读写权限，或检查 API 限额",
+    404: "找不到仓库或文件：检查仓库名和 token 权限",
+    409: "仓库内容发生并发变更，尚未覆盖其他修改",
+  };
+  const error = new Error(
+    messages[res.status] || detail || `请求失败（${res.status}）`,
+  );
+  error.status = res.status;
+  throw error;
 }
 
 // 校验 token，返回仓库信息
@@ -103,7 +108,7 @@ export async function checkRepo({ repo, token }) {
 // 读取文件，返回 { sha, text }；文件不存在返回 null
 export async function readFile({ repo, branch, path, token }) {
   const res = await request(
-    `${API}/repos/${repo}/contents/${path}?ref=${branch}`,
+    `${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch)}`,
     {
       headers: headers(token),
     },
@@ -112,7 +117,7 @@ export async function readFile({ repo, branch, path, token }) {
   const data = await handle(res);
   if (data.encoding === "none") {
     const raw = await request(
-      `${API}/repos/${repo}/contents/${path}?ref=${encodeURIComponent(branch)}`,
+      `${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch)}`,
       {
         headers: {
           ...headers(token),
@@ -161,38 +166,61 @@ export async function deleteFile({ repo, branch, path, token, sha, message }) {
   return { commitUrl: data.commit?.html_url || "" };
 }
 
-// 带 409 重试的「读-改-写」：手机上连着写两条时容易撞车
-export async function updateText({
+// Serialize mutations to the same branch/file in this tab. Never reuse a failed read's SHA.
+const textWriteQueues = new Map();
+export function updateText({
   repo,
   branch,
   path,
   token,
   message,
   update,
-  retries = 2,
+  retries = 4,
 }) {
-  let attempt = 0;
-  for (;;) {
-    const file = await readFile({ repo, branch, path, token });
-    const before = file ? file.text : "";
-    const after = update(before);
-    if (after === null)
-      throw new Error("没有找到要修改的内容（可能已被改动，刷新重试）");
-    try {
-      return await writeFile({
-        repo,
-        branch,
-        path,
-        token,
-        text: after,
-        sha: file?.sha,
-        message,
-      });
-    } catch (err) {
-      attempt += 1;
-      if (attempt >= retries) throw err;
-    }
-  }
+  const key = JSON.stringify([repo, branch, path]);
+  const previous = textWriteQueues.get(key) || Promise.resolve();
+  const pending = previous
+    .catch(() => {})
+    .then(async () => {
+      const attempts = Math.max(1, Math.min(5, retries));
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        const file = await readFile({ repo, branch, path, token });
+        const before = file ? file.text : "";
+        const after = update(before);
+        if (after === null)
+          throw new Error(
+            "未找到原内容，可能已被修改；请刷新列表核对，未覆盖任何文件。",
+          );
+        if (after === before) return { unchanged: true };
+        try {
+          return await writeFile({
+            repo,
+            branch,
+            path,
+            token,
+            text: after,
+            sha: file?.sha,
+            message,
+          });
+        } catch (error) {
+          // Only a definite rejected conflict can be safely retried. Never replay an
+          // ambiguous network timeout (an append might already have reached GitHub).
+          if (error.status !== 409) throw error;
+          if (attempt + 1 === attempts)
+            throw new Error(
+              "其他设备正在修改同一文件，多次重新读取后仍有冲突。请稍后刷新再试；本次没有覆盖其他内容。",
+              { cause: error },
+            );
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.min(150 * 2 ** attempt, 1200)),
+          );
+        }
+      }
+    });
+  textWriteQueues.set(key, pending);
+  return pending.finally(() => {
+    if (textWriteQueues.get(key) === pending) textWriteQueues.delete(key);
+  });
 }
 
 // A commit is published only by the final non-forced ref update. No partial article goes live.
@@ -206,6 +234,7 @@ export async function githubJSON({
 }) {
   const res = await fetch(`${API}/repos/${repo}/${path}`, {
     method,
+    ...(method === "GET" ? { cache: "no-store" } : {}),
     headers: {
       ...headers(token),
       ...(body ? { "Content-Type": "application/json" } : {}),

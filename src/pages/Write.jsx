@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { gh, checkRepo, readFile, writeFile } from "../lib/github";
+import { gh, checkRepo, updateText } from "../lib/github";
 import { site } from "../data/posts";
 import { Icon } from "../components/Icons";
 import PostEditor from "../components/PostEditor";
@@ -108,32 +108,18 @@ export default function Write() {
       const entry = `\n## ${date} | ${mood}\n${text.trim()}\n`;
       const message = `moments: ${date} ${text.trim().slice(0, 18)}`;
 
-      let attempt = 0;
-      // 文件可能刚好被别人（或另一台设备）改过，重试一次即可
-      while (attempt < 2) {
-        const file = await readFile({
-          repo,
-          branch: site.branch,
-          path: site.momentsPath,
-          token,
-        });
-        if (!file) throw new Error("没找到 moments.md，检查路径是否正确");
-        try {
-          await writeFile({
-            repo,
-            branch: site.branch,
-            path: site.momentsPath,
-            token,
-            text: `${file.text.trimEnd()}\n${entry}`,
-            sha: file.sha,
-            message,
-          });
-          break;
-        } catch (err) {
-          attempt += 1;
-          if (attempt >= 2) throw err;
-        }
-      }
+      await updateText({
+        repo,
+        branch: site.branch,
+        path: site.momentsPath,
+        token,
+        message,
+        update: (before) => {
+          if (!before)
+            throw new Error("没找到 moments.md，检查仓库路径是否正确");
+          return `${before.trimEnd()}\n${entry}`;
+        },
+      });
 
       setDone(true);
       setText("");
