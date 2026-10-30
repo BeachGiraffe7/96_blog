@@ -1205,3 +1205,200 @@
   min-height: 44px;
   white-space: nowrap;
 }
+
+/* Inline attachments promote their existing DOM to the browser's top layer. */
+.article-components .asset-stage {
+  position: static;
+  inset: auto;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
+}
+.article-components .asset-stage-heading[hidden] {
+  display: none;
+}
+.article-components .asset-stage.is-expanded {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: calc(100vw - 40px);
+  max-width: 1800px;
+  height: calc(100vh - 40px);
+  height: calc(100dvh - 40px);
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 20px 80px #0005;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.article-components .asset-stage::backdrop {
+  background: rgb(13 23 35 / 65%);
+}
+.article-components .asset-stage-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  flex: none;
+  border-bottom: 1px solid var(--stroke);
+  background: var(--paper);
+  color: var(--ink);
+}
+.article-components .asset-stage-heading strong {
+  font-size: 16px;
+  display: block;
+}
+.article-components .asset-stage-heading span {
+  font-size: 13px;
+  color: var(--sub);
+  display: block;
+  overflow-wrap: anywhere;
+}
+.article-components .asset-stage-heading button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.article-components .asset-stage-content {
+  min-width: 0;
+}
+.article-components .is-expanded .asset-stage-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.article-components .is-expanded .pdf-viewer,
+.article-components .is-expanded .html-module {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+}
+.article-components .is-expanded .asset-top,
+.article-components .is-expanded .pdf-controls,
+.article-components .is-expanded .module-controls,
+.article-components .is-expanded .module-warning {
+  flex: none;
+}
+.article-components .is-expanded .pdf-canvas-area,
+.article-components .is-expanded .pdf-canvas-area.zoomed {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.article-components .is-expanded .html-module iframe {
+  flex: 1;
+  min-height: 0;
+  height: 100% !important;
+}
+.article-components .pdf-canvas-area {
+  min-width: 0;
+  width: 100%;
+}
+.article-components .pdf-canvas-area.zoomed {
+  overflow: auto;
+}
+.article-components .asset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 700px) {
+  .article-components .asset-stage.is-expanded {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    border: 0;
+  }
+  .article-components .asset-stage-heading {
+    padding: max(10px, env(safe-area-inset-top)) 12px 10px;
+    gap: 10px;
+  }
+  .article-components .asset-stage-heading span {
+    max-width: 52vw;
+  }
+  .article-components .asset-actions {
+    width: 100%;
+  }
+  .article-components .asset-actions button {
+    width: auto;
+    flex: 1;
+  }
+  .article-components .is-expanded .asset-top {
+    padding: 8px 12px;
+  }
+  .article-components .is-expanded .asset-top span {
+    display: none;
+  }
+  .article-components .is-expanded .asset-top {
+    flex-direction: row;
+    align-items: center;
+  }
+  .article-components .is-expanded .asset-top > button {
+    width: auto;
+  }
+  .article-components .is-expanded .html-module .asset-top {
+    display: none;
+  }
+  .article-components .is-expanded .module-controls {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+  }
+  .article-components .is-expanded .module-controls button {
+    width: auto;
+    flex-shrink: 0;
+  }
+  .article-components .is-expanded .module-controls span {
+    font-size: 12px;
+  }
+}
+.article-components .asset-stage-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+/* A large window has one compact title bar, not a second duplicate file card. */
+.article-components .is-expanded .asset-top {
+  display: none;
+}
+@media (max-width: 700px) {
+  .article-components .asset-stage-heading > div:first-child {
+    min-width: 0;
+  }
+  .article-components .asset-stage-heading span {
+    max-width: 42vw;
+  }
+  .article-components .asset-stage-actions {
+    gap: 6px;
+  }
+  .article-components .asset-stage-actions button {
+    padding: 8px 10px;
+  }
+}
+.article-components .asset-stage-heading span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.article-components .asset-expand-trigger[hidden] {
+  display: none;
+}
