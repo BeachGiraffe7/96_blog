@@ -63,6 +63,10 @@ try {
   await page.getByRole("button", { name: "载入时钟树示例 →" }).click();
   await page.getByText("已载入示例。", { exact: false }).waitFor();
   await page.waitForTimeout(1600);
+  // Use a test-only slug even when the demo has since been published for real.
+  await page
+    .getByLabel("网址尾段", { exact: true })
+    .fill(`qa-composite-${Date.now()}`);
   assert.equal(await page.locator(".edit-block").count(), 5);
   assert.equal(
     await page
