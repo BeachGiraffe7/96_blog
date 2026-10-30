@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "title": "STM32时钟树：我的理解与动手验证",
+    "slug": "stm32-clock-notes",
+    "category": "嵌入式",
+    "series": "STM32 裸机",
+    "tags": "STM32, 时钟树, 学习笔记",
+    "excerpt": "先看我的理解，再查中文总图，最后在同一篇文章里修改参数、验证时钟。"
+  },
+  "blocks": [
+    {
+      "id": "dfa9acae-539d-4cfd-b3ad-7c037b7c64ed",
+      "type": "markdown",
+      "text": "## 学习记录\n\n对时钟树的配置已经有些模糊了，回忆了一下近段时间新建工程的时候，都是照着ai给的指示来配置，虽然没什么问题，但是突然想复习一下时钟树的内容，于是就开始了这次的学习\n\n\n> 温故而知新，加上AI愈加强大，对同样的时钟树有了比当初更深的理解却比当初更好理解"
+    },
+    {
+      "id": "e08ac076-16a2-4fa7-8a6c-eb6ee16620ee",
+      "type": "pdf",
+      "assetId": "bd6588af-d3d2-4d1f-9562-93b97f62b65f",
+      "title": "知识速查册与中文时钟树",
+      "page": 3
+    },
+    {
+      "id": "8c822447-57c8-426f-a1ba-91cc957e3c9a",
+      "type": "markdown",
+      "text": "## 动手验证\n\n读完上面的规则后，在下面修改PLL参数。实验台里的“打开PDF中文总图”会返回本文的PDF第2页。"
+    },
+    {
+      "id": "fa1e09dc-3ba8-4879-aa1b-4530bc569b3d",
+      "type": "html",
+      "assetId": "be44c36d-ffdd-4e5d-beaf-aba3ee30db1c",
+      "title": "时钟树配套实验台"
+    },
+    {
+      "id": "b802692d-ac1e-473a-b5b6-f27b91e780fa",
+      "type": "markdown",
+      "text": "## 我的结论\n\n在这里补充自己的观察，例如：主频正确，不代表每一条外设分支都正确。"
+    }
+  ],
+  "assets": [
+    {
+      "id": "bd6588af-d3d2-4d1f-9562-93b97f62b65f",
+      "name": "STM32时钟树_知识速查册.pdf",
+      "aliases": "",
+      "type": "pdf",
+      "mime": "application/pdf",
+      "size": 1246981,
+      "path": "assets/bd6588af-d3d2-4d1f-9562-93b97f62b65f-STM32时钟树_知识速查册.pdf"
+    },
+    {
+      "id": "be44c36d-ffdd-4e5d-beaf-aba3ee30db1c",
+      "name": "STM32时钟树_配套实验台.html",
+      "aliases": "",
+      "type": "html",
+      "mime": "text/html",
+      "size": 29994,
+      "path": "assets/be44c36d-ffdd-4e5d-beaf-aba3ee30db1c-STM32时钟树_配套实验台.html.txt"
+    }
+  ]
+}

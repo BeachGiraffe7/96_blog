@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "slug": "stm32-clock-notes",
+    "title": "STM32时钟树：我的理解与动手验证",
+    "category": "嵌入式",
+    "series": "STM32 裸机",
+    "date": "2026-10-30",
+    "views": 0,
+    "words": 222,
+    "tags": [
+      "STM32",
+      "时钟树",
+      "学习笔记"
+    ],
+    "excerpt": "先看我的理解，再查中文总图，最后在同一篇文章里修改参数、验证时钟。",
+    "hasBody": true,
+    "cover": "",
+    "contentType": "article-v1",
+    "articlePath": "/articles/stm32-clock-notes/article.json"
+  }
+]
