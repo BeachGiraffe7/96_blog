@@ -1,7 +1,7 @@
 /* ============================================================
    全局样式
    颜色全部走语义变量：尺寸与字体共用，配色由 data-palette 切换
-   浅色预设：cool 冷白 / paper 宣纸 / celadon 青瓷 / indigo 靛蓝 / terrazzo 水磨石
+   浅色预设：cool 冷白 / paper 宣纸 / celadon 青瓷 / blush 粉白 / sage 灰绿
    深色：墨夜（data-theme=dark，优先级最高）
    ============================================================ */
 :root {
@@ -163,35 +163,16 @@
   --shadow-hover: 0 12px 30px rgba(72, 44, 56, 0.16);
 }
 
-/* ---------------- 纯白（飞书那种极简） ---------------- */
-[data-palette='plain'] {
-  --bg: #f5f6f7;
-  --bg-glow: rgba(255, 255, 255, 0.98);
-  --bg-dot: rgba(51, 112, 255, 0.08);
-  --card: #ffffff;
-  --surface-soft: #fafbfc;
-  --surface-sunken: #f0f1f3;
-  --header-bg: rgba(255, 255, 255, 0.9);
-  --white-rgb: 255 255 255;
-
-  --line: #e4e5e8;
-  --line-soft: #eeeff1;
-  --line-strong: #d0d2d6;
-
-  --text: #1f2329;
-  --text-2: #4e5561;
-  --text-3: #7a828d;
-  --text-4: #9aa1ab;
-
-  --accent: #3370ff;
-  --accent-strong: #245bdb;
-  --accent-rgb: 51 112 255;
-  --accent-soft: #eaf0ff;
-  --accent-badge: #d6e2ff;
-  --on-accent: #ffffff;
-
-  --shadow: 0 1px 4px rgba(31, 35, 41, 0.05);
-  --shadow-hover: 0 6px 20px rgba(31, 35, 41, 0.1);
+/* ---------------- 灰绿（成长手记配色；替换原纯白） ---------------- */
+[data-palette='sage'] {
+  --bg: #f4f5f2; --bg-glow: transparent; --bg-dot: transparent;
+  --card: #ffffff; --surface-soft: #edf1eb; --surface-sunken: #e3ebe0;
+  --header-bg: rgba(244,245,242,.94); --white-rgb: 255 255 255;
+  --line: #dce2db; --line-soft: #e5e9e2; --line-strong: #859485;
+  --text: #253c36; --text-2: #40574b; --text-3: #5c6d65; --text-4: #63736a;
+  --accent: #315f4b; --accent-strong: #254b39; --accent-rgb: 49 95 75;
+  --accent-soft: #edf1eb; --accent-badge: #d1decb; --on-accent: #ffffff;
+  --shadow: 0 1px 4px rgba(37,60,54,.04); --shadow-hover: 0 6px 20px rgba(37,60,54,.08);
 }
 
 /* ---------------- 深色：墨夜（放在最后，覆盖所有浅色预设） ---------------- */

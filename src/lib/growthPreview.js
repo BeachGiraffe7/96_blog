@@ -189,7 +189,7 @@ export function taskProject(task, projects) {
     `${task.project || "原项目"}（已删除）`
   );
 }
-export function previewDigest(data, week) {
+export function previewDigest(data, week, {previewMode=true}={}) {
   // Category snapshots keep historical exports intact after rename/deletion.
   const days = Object.fromEntries(
     Object.entries(data.days).map(([date, day]) => [
@@ -220,5 +220,5 @@ export function previewDigest(data, week) {
     /有记录：\d+\/7 天/,
     `有记录：${recorded}/7 天`,
   );
-  return `> 独立预览导出：只含本机示例/测试记录，不是正式私密数据。\n> 请仅依据有记录的内容复盘；缺失日期标为无记录，不推断未记录的学习，也不把未完成任务当作成果。\n\n${digest}${captured ? `\n## 本周成果速记\n${captured}\n` : ""}`;
+  return `${previewMode ? "> 独立预览导出：只含本机示例/测试记录，不是正式私密数据。\n" : ""}> 请仅依据有记录的内容复盘；缺失日期标为无记录，不推断未记录的学习，也不把未完成任务当作成果。\n\n${digest}${captured ? `\n## 本周成果速记\n${captured}\n` : ""}`;
 }

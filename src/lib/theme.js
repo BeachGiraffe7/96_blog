@@ -11,11 +11,41 @@ export const THEMES = [
 
 // 浅色配色预设，色值同时用于面板上的小色卡
 export const PALETTES = [
-  { id: 'cool', label: '冷白', bg: '#eceff4', card: '#ffffff', accent: '#2f628f' },
-  { id: 'paper', label: '宣纸', bg: '#f4eee2', card: '#fffdf7', accent: '#96662f' },
-  { id: 'celadon', label: '青瓷', bg: '#eaf0ee', card: '#ffffff', accent: '#3a7a6f' },
-  { id: 'blush', label: '粉白', bg: '#f8f3f5', card: '#fffdfe', accent: '#c4667f' },
-  { id: 'plain', label: '纯白', bg: '#f5f6f7', card: '#ffffff', accent: '#3370ff' },
+  {
+    id: 'cool',
+    label: '冷白',
+    bg: '#eceff4',
+    card: '#ffffff',
+    accent: '#2f628f',
+  },
+  {
+    id: 'paper',
+    label: '宣纸',
+    bg: '#f4eee2',
+    card: '#fffdf7',
+    accent: '#96662f',
+  },
+  {
+    id: 'celadon',
+    label: '青瓷',
+    bg: '#eaf0ee',
+    card: '#ffffff',
+    accent: '#3a7a6f',
+  },
+  {
+    id: 'blush',
+    label: '粉白',
+    bg: '#f8f3f5',
+    card: '#fffdfe',
+    accent: '#c4667f',
+  },
+  {
+    id: 'sage',
+    label: '灰绿',
+    bg: '#f4f5f2',
+    card: '#ffffff',
+    accent: '#315f4b',
+  },
 ]
 
 export const FONTS = [
@@ -26,14 +56,16 @@ export const FONTS = [
 
 // 手写体走 CDN，按需插入 <link>：不选就不请求
 const WEBFONTS = {
-  wenkai: 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css',
+  wenkai:
+    'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css',
 }
 
 const loadedFonts = new Set()
 
 export function loadWebFont(id) {
   const href = WEBFONTS[id]
-  if (!href || loadedFonts.has(id) || typeof document === 'undefined') return false
+  if (!href || loadedFonts.has(id) || typeof document === 'undefined')
+    return false
   if (document.querySelector(`link[data-webfont="${id}"]`)) {
     loadedFonts.add(id)
     return true
@@ -67,14 +99,23 @@ const write = (key, value) => {
 
 export const getTheme = () => read(THEME_KEY, 'auto')
 export const getFont = () => read(FONT_KEY, 'sans')
-export const getPalette = () => read(PALETTE_KEY, 'cool')
+export const getPalette = () => {
+  const value = read(PALETTE_KEY, 'cool')
+  return value === 'plain' ? 'sage' : value
+}
 
 export const systemDark = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches
 
-export const resolveTheme = (theme) => (theme === 'auto' ? (systemDark() ? 'dark' : 'light') : theme)
+export const resolveTheme = (theme) =>
+  theme === 'auto' ? (systemDark() ? 'dark' : 'light') : theme
 
-export function applyTheme(theme = getTheme(), font = getFont(), palette = getPalette()) {
+export function applyTheme(
+  theme = getTheme(),
+  font = getFont(),
+  palette = getPalette(),
+) {
   const root = document.documentElement
   const mode = resolveTheme(theme)
 
@@ -82,7 +123,10 @@ export function applyTheme(theme = getTheme(), font = getFont(), palette = getPa
   else root.removeAttribute('data-theme')
 
   // 旧版本可能存着已删除的配色，回退到默认
-  const safePalette = PALETTES.some((p) => p.id === palette) ? palette : 'cool'
+  const migratedPalette = palette === 'plain' ? 'sage' : palette
+  const safePalette = PALETTES.some((p) => p.id === migratedPalette)
+    ? migratedPalette
+    : 'cool'
   if (safePalette !== 'cool') root.dataset.palette = safePalette
   else root.removeAttribute('data-palette')
 
@@ -93,7 +137,10 @@ export function applyTheme(theme = getTheme(), font = getFont(), palette = getPa
 
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) {
-    const tint = mode === 'dark' ? '#1b1a1e' : PALETTES.find((p) => p.id === safePalette)?.bg || '#eceff4'
+    const tint =
+      mode === 'dark'
+        ? '#1b1a1e'
+        : PALETTES.find((p) => p.id === safePalette)?.bg || '#eceff4'
     meta.setAttribute('content', tint)
   }
 
@@ -119,7 +166,8 @@ export function setPalette(palette) {
 export function watchSystem(onChange) {
   const mq = window.matchMedia('(prefers-color-scheme: dark)')
   const handler = () => {
-    if (getTheme() === 'auto') onChange(applyTheme('auto', getFont(), getPalette()))
+    if (getTheme() === 'auto')
+      onChange(applyTheme('auto', getFont(), getPalette()))
   }
   mq.addEventListener('change', handler)
   return () => mq.removeEventListener('change', handler)

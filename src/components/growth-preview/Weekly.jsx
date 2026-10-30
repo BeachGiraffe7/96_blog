@@ -1,61 +1,73 @@
-import { useState } from "react";
-import { isoWeek, localDate, shiftWeek, weekRange } from "../../data/growth";
-import { lastFullWeek, previewDigest } from "../../lib/growthPreview";
-import Markdown from "../Markdown";
-export default function Weekly({ data, commit, onOpenDay }) {
-  const [week, setWeek] = useState(() => lastFullWeek());
-  const [showExport, setShowExport] = useState(false);
-  const [preview, setPreview] = useState(false);
-  const [message, setMessage] = useState("");
+import { useState } from 'react'
+import { isoWeek, localDate, shiftWeek, weekRange } from '../../data/growth'
+import { lastFullWeek, previewDigest } from '../../lib/growthPreview'
+import Markdown from '../Markdown'
+export default function Weekly({
+  data,
+  commit,
+  onOpenDay,
+  previewMode = true,
+  canWrite = true,
+  initialWeek,
+}) {
+  const [archiveWeek, setArchiveWeek] = useState(
+    () => initialWeek || isoWeek(localDate()),
+  )
+  const [showExport, setShowExport] = useState(false)
+  const [preview, setPreview] = useState(false)
+  const [message, setMessage] = useState('')
   // week is the learning-record source; its review is archived in the following week.
-  const archiveWeek = shiftWeek(week, 1);
-  const archiveRange = weekRange(archiveWeek);
-  const range = weekRange(week);
+  const week =
+    data.weekly[archiveWeek]?.sourceWeek ||
+    (data.weekly[archiveWeek] ? archiveWeek : shiftWeek(archiveWeek, -1))
+  const archiveRange = weekRange(archiveWeek)
+  const range = weekRange(week)
   const text =
-    data.reviewDrafts[archiveWeek] ?? data.weekly[archiveWeek]?.text ?? "";
-  const digest = previewDigest(data, week);
+    data.reviewDrafts[archiveWeek] ?? data.weekly[archiveWeek]?.text ?? ''
+  const digest = previewDigest(data, week, { previewMode })
   const hasRecord = Object.entries(data.days).filter(
     ([d, v]) =>
       d >= range.start &&
       d <= range.end &&
       ((v.tasks || []).length || v.learned || v.stuck || v.next),
-  ).length;
+  ).length
   const select = (w) => {
-    setWeek(w);
-    setMessage("");
-    setPreview(false);
-  };
+    setArchiveWeek(w)
+    setMessage('')
+    setPreview(false)
+  }
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(digest);
-      setMessage("已复制七天记录和复盘提示词，可以粘贴给其他 AI。");
+      await navigator.clipboard.writeText(digest)
+      setMessage('已复制七天记录和复盘提示词，可以粘贴给其他 AI。')
     } catch {
-      setShowExport(true);
-      setMessage("自动复制不可用，请全选下方导出文本复制，或下载文件。");
+      setShowExport(true)
+      setMessage('自动复制不可用，请全选下方导出文本复制，或下载文件。')
     }
-  };
+  }
   const download = () => {
-    const blob = new Blob([digest], { type: "text/markdown;charset=utf-8" }),
+    const blob = new Blob([digest], { type: 'text/markdown;charset=utf-8' }),
       url = URL.createObjectURL(blob),
-      a = document.createElement("a");
-    a.href = url;
-    a.download = `${week}-${range.start}-至-${range.end}-学习记录-预览.md`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setMessage("七天学习记录已下载为 Markdown，可交给其他 AI。");
-  };
+      a = document.createElement('a')
+    a.href = url
+    a.download = `${week}-${range.start}-至-${range.end}-学习记录${previewMode ? '-预览' : ''}.md`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    setMessage('七天学习记录已下载为 Markdown，可交给其他 AI。')
+  }
   const save = () => {
-    setMessage("");
-    const drafts = { ...data.reviewDrafts };
-    delete drafts[archiveWeek];
+    setMessage('')
+    const drafts = { ...data.reviewDrafts }
+    delete drafts[archiveWeek]
     commit(
       {
         ...data,
         weekly: {
           ...data.weekly,
           [archiveWeek]: {
+            ...data.weekly[archiveWeek],
             text,
             sourceWeek: week,
             updatedAt: new Date().toISOString(),
@@ -63,12 +75,12 @@ export default function Weekly({ data, commit, onOpenDay }) {
         },
         reviewDrafts: drafts,
       },
-      "周复盘已保存在本机预览中，可切换周次回看。",
-    );
-  };
+      '周复盘已保存在本机预览中，可切换周次回看。',
+    )
+  }
   const history = Object.entries(data.weekly)
     .filter(([, e]) => e.text.trim())
-    .sort(([a], [b]) => b.localeCompare(a));
+    .sort(([a], [b]) => b.localeCompare(a))
   return (
     <main className="gw-review-layout">
       <div className="gw-week-main">
@@ -83,7 +95,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
             <button
               className="gw-outline"
               aria-label="上一周"
-              onClick={() => select(shiftWeek(week, -1))}
+              onClick={() => select(shiftWeek(archiveWeek, -1))}
             >
               ‹
             </button>
@@ -94,17 +106,17 @@ export default function Weekly({ data, commit, onOpenDay }) {
               </span>
               <small>
                 {archiveWeek === isoWeek(localDate())
-                  ? "本周复盘"
+                  ? '本周复盘'
                   : archiveWeek > isoWeek(localDate())
-                    ? "未来周复盘"
-                    : "历史周复盘"}{" "}
+                    ? '未来周复盘'
+                    : '历史周复盘'}{' '}
                 · 回顾前一周
               </small>
             </div>
             <button
               className="gw-outline"
               aria-label="下一周"
-              onClick={() => select(shiftWeek(week, 1))}
+              onClick={() => select(shiftWeek(archiveWeek, 1))}
             >
               ›
             </button>
@@ -112,7 +124,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
           <div className="gw-week-shortcuts">
             <button
               className="gw-text-button"
-              onClick={() => select(lastFullWeek())}
+              onClick={() => select(isoWeek(localDate()))}
             >
               回到本周
             </button>
@@ -140,7 +152,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
                 className="gw-text-button"
                 onClick={() => setShowExport(!showExport)}
               >
-                {showExport ? "收起导出内容" : "查看导出内容"}
+                {showExport ? '收起导出内容' : '查看导出内容'}
               </button>
             </div>
             {hasRecord === 0 && (
@@ -150,9 +162,17 @@ export default function Weekly({ data, commit, onOpenDay }) {
             )}
             {showExport && (
               <label className="gw-export-preview">
-                <span>交给 AI 的完整内容（预览示例）</span>
+                <span>
+                  {previewMode
+                    ? '交给 AI 的完整内容（预览示例）'
+                    : '交给 AI 的完整学习记录'}
+                </span>
                 <textarea
-                  aria-label="交给 AI 的完整内容（预览示例）"
+                  aria-label={
+                    previewMode
+                      ? '交给 AI 的完整内容（预览示例）'
+                      : '交给 AI 的完整学习记录'
+                  }
                   value={digest}
                   readOnly
                   rows={12}
@@ -161,8 +181,10 @@ export default function Weekly({ data, commit, onOpenDay }) {
               </label>
             )}
             <p className="gw-muted">
-              本周复盘使用上一周的七天记录；切换归档周时，素材范围也随之切换。文件含学习内容，交给外部
-              AI 前请检查。
+              {data.weekly[archiveWeek] && !data.weekly[archiveWeek].sourceWeek
+                ? '这篇旧复盘保留原归档周，素材沿用当周记录。'
+                : '本周复盘使用上一周的七天记录；切换归档周时，素材范围也随之切换。'}
+              文件含学习内容，交给外部 AI 前请检查。
             </p>
           </section>
           <section className="gw-paste-step">
@@ -173,7 +195,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
                 className="gw-text-button"
                 onClick={() => setPreview(!preview)}
               >
-                {preview ? "继续编辑" : "阅读预览"}
+                {preview ? '继续编辑' : '阅读预览'}
               </button>
             </div>
             {preview ? (
@@ -190,6 +212,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
                 <textarea
                   aria-label="粘贴 AI 生成的周复盘"
                   className="gw-review-paste"
+                  readOnly={!canWrite}
                   value={text}
                   placeholder="把其他 AI 生成的周复盘粘贴到这里，可直接编辑，支持 Markdown。"
                   maxLength={50000}
@@ -202,7 +225,7 @@ export default function Weekly({ data, commit, onOpenDay }) {
                           [archiveWeek]: e.target.value,
                         },
                       },
-                      "复盘草稿已自动保存在本机；点击保存后加入历史周复盘。",
+                      '复盘草稿已暂存；点击保存后加入历史周复盘。',
                     )
                   }
                 />
@@ -211,16 +234,16 @@ export default function Weekly({ data, commit, onOpenDay }) {
             <div className="gw-form-bottom">
               <span>
                 {data.reviewDrafts[archiveWeek] !== undefined
-                  ? "有草稿待保存"
+                  ? '有草稿待保存'
                   : data.weekly[archiveWeek]
-                    ? "已保存到本周记录"
-                    : "尚未保存复盘"}{" "}
-                · 本机预览
+                    ? '已保存到本周记录'
+                    : '尚未保存复盘'}{' '}
+                · {previewMode ? '本机预览' : '加密记录'}
               </span>
               <button
                 className="gw-primary"
                 onClick={save}
-                disabled={!text.trim()}
+                disabled={!canWrite || !text.trim()}
               >
                 保存本周复盘
               </button>
@@ -242,15 +265,15 @@ export default function Weekly({ data, commit, onOpenDay }) {
               {history.map(([w, e]) => (
                 <button
                   key={w}
-                  className={w === archiveWeek ? "active" : ""}
-                  onClick={() => select(e.sourceWeek || shiftWeek(w, -1))}
+                  className={w === archiveWeek ? 'active' : ''}
+                  onClick={() => select(w)}
                 >
                   <strong>{w}</strong>
                   <span>
-                    回顾：{weekRange(e.sourceWeek || shiftWeek(w, -1)).start} —{" "}
-                    {weekRange(e.sourceWeek || shiftWeek(w, -1)).end}
+                    回顾：{weekRange(e.sourceWeek || w).start} —{' '}
+                    {weekRange(e.sourceWeek || w).end}
                   </span>
-                  <small>{e.text.replace(/[#*`]/g, "").slice(0, 60)}</small>
+                  <small>{e.text.replace(/[#*`]/g, '').slice(0, 60)}</small>
                 </button>
               ))}
             </div>
@@ -270,5 +293,5 @@ export default function Weekly({ data, commit, onOpenDay }) {
         </section>
       </aside>
     </main>
-  );
+  )
 }

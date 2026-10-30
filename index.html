@@ -20,6 +20,7 @@
             (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
           if (dark) document.documentElement.dataset.theme = 'dark'
           var p = localStorage.getItem('blog_palette')
+          if (p === 'plain') p = 'sage'
           if (p && p !== 'cool') document.documentElement.dataset.palette = p
           var f = localStorage.getItem('blog_font')
           if (f && f !== 'sans') document.documentElement.dataset.font = f
@@ -27,8 +28,8 @@
             cool: '#eceff4',
             paper: '#f4eee2',
             celadon: '#eaf0ee',
-            indigo: '#eeeef6',
-            terrazzo: '#f2ede8',
+            blush: '#f8f3f5',
+            sage: '#f4f5f2',
           }
           var m = document.querySelector('meta[name="theme-color"]')
           if (m) m.setAttribute('content', dark ? '#1b1a1e' : tints[p] || '#eceff4')

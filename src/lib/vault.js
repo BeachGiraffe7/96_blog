@@ -28,12 +28,18 @@ async function fetchEnvelopeText(kind) {
   const token = gh.getToken()
   const c = conf(kind)
   if (token) {
-    const f = await readFile({ repo: GROWTH.repo, branch: GROWTH.branch, path: c.path, token })
+    const f = await readFile({
+      repo: GROWTH.repo,
+      branch: GROWTH.branch,
+      path: c.path,
+      token,
+    })
     if (!f) throw new Error('还没有数据文件，先用脚本初始化')
     return f.text
   }
   const opts = { cache: 'no-store' }
-  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) opts.signal = AbortSignal.timeout(15000)
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout)
+    opts.signal = AbortSignal.timeout(15000)
   const res = await fetch(`${c.url}?t=${Date.now()}`, opts)
   if (!res.ok) throw new Error('读取数据失败，检查网络后重试')
   return res.text()
@@ -42,7 +48,11 @@ async function fetchEnvelopeText(kind) {
 export async function unlock(password) {
   const env = JSON.parse(await fetchEnvelopeText('daily'))
   if (!env?.kdf?.salt) throw new Error('数据文件损坏，建议用脚本重建')
-  const key = await deriveKey(password, env.kdf.salt, env.kdf.iter || GROWTH.iter)
+  const key = await deriveKey(
+    password,
+    env.kdf.salt,
+    env.kdf.iter || GROWTH.iter,
+  )
   // 用 daily 试解一次：GCM 认证失败 = 密码不对
   await open(key, env, conf('daily').aad)
   KEY = key
@@ -72,7 +82,8 @@ export async function tryRestore() {
   }
 }
 
-const emptyData = (kind) => (kind === 'daily' ? { v: 1, days: {} } : { v: 1, weeks: {} })
+const emptyData = (kind) =>
+  kind === 'daily' ? { v: 1, days: {} } : { v: 1, weeks: {} }
 
 export async function loadData(kind) {
   if (!KEY) throw new Error('未解锁')
@@ -81,7 +92,7 @@ export async function loadData(kind) {
 }
 
 // 读-改-写：mutator 必须是纯函数，409 重试时会在最新数据上重放
-export async function saveData(kind, mutator) {
+async function saveDataOnce(kind, mutator) {
   if (!KEY) throw new Error('未解锁')
   if (!hasToken()) throw new Error('未连接 GitHub，只能查看')
 
@@ -89,10 +100,19 @@ export async function saveData(kind, mutator) {
   const c = conf(kind)
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const file = await readFile({ repo: GROWTH.repo, branch: GROWTH.branch, path: c.path, token })
+    const file = await readFile({
+      repo: GROWTH.repo,
+      branch: GROWTH.branch,
+      path: c.path,
+      token,
+    })
     const env = file ? JSON.parse(file.text) : null
     const base = env ? await open(KEY, env, c.aad) : emptyData(kind)
-    const next = mutator(structuredClone ? structuredClone(base) : JSON.parse(JSON.stringify(base)))
+    const next = mutator(
+      typeof structuredClone === 'function'
+        ? structuredClone(base)
+        : JSON.parse(JSON.stringify(base)),
+    )
 
     const { iv, ct } = await seal(KEY, next, c.aad)
     const envelope = {
@@ -122,7 +142,32 @@ export async function saveData(kind, mutator) {
       return next
     } catch (err) {
       // 另一台设备刚写过：重试一次会在新数据上重放 mutator
-      if (attempt === 1) throw err
+      if (err.status !== 409 || attempt === 1) throw err
     }
   }
+}
+
+const DRAFT_AAD = 'growth:workbench-draft:v1'
+export async function sealLocalDraft(data) {
+  if (!KEY) throw new Error('未解锁，无法加密草稿')
+  const key = KEY,
+    salt = SALT
+  return { v: 1, salt, ...(await seal(key, data, DRAFT_AAD)) }
+}
+export async function openLocalDraft(envelope) {
+  if (!KEY) throw new Error('未解锁')
+  return open(KEY, envelope, DRAFT_AAD)
+}
+
+const queues = new Map()
+export function saveData(kind, mutator) {
+  const previous = queues.get(kind) || Promise.resolve()
+  const next = previous.catch(() => {}).then(() => saveDataOnce(kind, mutator))
+  queues.set(kind, next)
+  next
+    .finally(() => {
+      if (queues.get(kind) === next) queues.delete(kind)
+    })
+    .catch(() => {})
+  return next
 }
