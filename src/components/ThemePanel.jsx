@@ -108,7 +108,6 @@ export default function ThemePanel({ onClose }) {
                 type="button"
                 className={active ? 'theme-opt font-opt active' : 'theme-opt font-opt'}
                 title={f.note}
-                title={f.note}
                 aria-pressed={active}
                 onClick={() => setFontState(setFont(f.id))}
               >

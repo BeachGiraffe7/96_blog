@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { site, allPosts, livePosts, hiddenSlugs, moments as bundledMoments } from '../data/posts'
 import { readFile } from '../lib/github'
@@ -180,6 +181,7 @@ export default function ManagePanel({ token }) {
                   </span>
                   <p className="manage-title">{p.title}</p>
                 </div>
+                {p.contentType==='article-v1'&&<Link className="manage-btn" to={`/write?type=post&edit=${encodeURIComponent(p.slug)}`}>编辑</Link>}
                 <button
                   type="button"
                   className={
@@ -198,7 +200,7 @@ export default function ManagePanel({ token }) {
             ))}
           </ul>
         )}
-        <p className="manage-tip">删除会同时移除正文文件，恢复需要到 GitHub 的提交历史里找。</p>
+        <p className="manage-tip">组合文章删除会一并移除当前版本的正文与附件；Git历史仍保留旧版本。旧文章保持原管理方式。</p>
       </div>
 
       <div className="manage-group">

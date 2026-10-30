@@ -14,7 +14,8 @@
     "growth:decrypt": "node scripts/growth-crypt.mjs decrypt",
     "growth:encrypt": "node scripts/growth-crypt.mjs encrypt",
     "growth:verify": "node scripts/growth-crypt.mjs verify",
-    "growth:passwd": "node scripts/growth-crypt.mjs passwd"
+    "growth:passwd": "node scripts/growth-crypt.mjs passwd",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "mammoth": "^1.13.0",

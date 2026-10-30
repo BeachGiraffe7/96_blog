@@ -19,8 +19,6 @@ export const site = {
   momentsPath: 'src/content/moments.md',
   livePostsPath: 'src/data/livePosts.json',
   hiddenPath: 'src/data/hidden.json',
-  livePostsPath: 'src/data/livePosts.json',
-  hiddenPath: 'src/data/hidden.json',
   siteUrl: 'https://beachgiraffe.pages.dev',
   links: [
     { icon: 'github', href: 'https://github.com', label: 'GitHub' },

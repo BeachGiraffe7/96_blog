@@ -12,3 +12,6 @@ raw/
 
 # 编辑器粘图时自动生成的资源目录，图片应放 public/notes/<slug>/image/
 *.assets/
+
+# Generated browser-test exports/screenshots
+.qa/

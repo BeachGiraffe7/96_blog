@@ -1,102 +1,114 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { gh, checkRepo, readFile, writeFile } from '../lib/github'
-import { site } from '../data/posts'
-import { Icon } from '../components/Icons'
-import PostEditor from '../components/PostEditor'
-import ManagePanel from '../components/ManagePanel'
-import WriteGate from '../components/WriteGate'
-import { isWriteUnlocked, lockWrite } from '../lib/writeAuth'
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { gh, checkRepo, readFile, writeFile } from "../lib/github";
+import { site } from "../data/posts";
+import { Icon } from "../components/Icons";
+import PostEditor from "../components/PostEditor";
+import ManagePanel from "../components/ManagePanel";
+import WriteGate from "../components/WriteGate";
+import { isWriteUnlocked, lockWrite } from "../lib/writeAuth";
 
-const MOODS = ['平静', '开心', '有点丧', '灵光一现', '放松', '愧疚']
+const MOODS = ["平静", "开心", "有点丧", "灵光一现", "放松", "愧疚"];
 
 const today = () => {
-  const d = new Date()
-  const p = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
-}
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
 
 export default function Write() {
-  const [sp, setSp] = useSearchParams()
-  const typeParam = sp.get('type')
-  const type = typeParam === 'post' ? 'post' : typeParam === 'manage' ? 'manage' : 'moment'
+  const [sp, setSp] = useSearchParams();
+  const typeParam = sp.get("type");
+  const type =
+    typeParam === "post"
+      ? "post"
+      : typeParam === "manage"
+        ? "manage"
+        : "moment";
 
-  const [token, setToken] = useState('')
-  const [tokenDraft, setTokenDraft] = useState('')
-  const [saved, setSaved] = useState(false)
-  const [checking, setChecking] = useState(false)
-  const [error, setError] = useState('')
-  const [info, setInfo] = useState('')
+  const [token, setToken] = useState("");
+  const [tokenDraft, setTokenDraft] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
-  const [date, setDate] = useState(today())
-  const [mood, setMood] = useState('平静')
-  const [text, setText] = useState('')
-  const [sending, setSending] = useState(false)
-  const [done, setDone] = useState(false)
-  const [published, setPublished] = useState(null)
-  const [unlocked, setUnlocked] = useState(isWriteUnlocked)
+  const [date, setDate] = useState(today());
+  const [mood, setMood] = useState("平静");
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [done, setDone] = useState(false);
+  const [published, setPublished] = useState(null);
+  const [unlocked, setUnlocked] = useState(isWriteUnlocked);
 
   useEffect(() => {
     document.title =
-      type === 'post' ? '写文章 · 海滩长颈鹿' : type === 'manage' ? '管理内容 · 海滩长颈鹿' : '写一条碎碎念 · 海滩长颈鹿'
-    const t = gh.getToken()
+      type === "post"
+        ? "写文章 · 海滩长颈鹿"
+        : type === "manage"
+          ? "管理内容 · 海滩长颈鹿"
+          : "写一条碎碎念 · 海滩长颈鹿";
+    const t = gh.getToken();
     if (t) {
-      setToken(t)
-      setTokenDraft(t)
+      setToken(t);
+      setTokenDraft(t);
     }
-  }, [type])
+  }, [type]);
 
-  const repo = site.repo
-  const canSend = useMemo(() => text.trim().length > 0 && !sending, [text, sending])
+  const repo = site.repo;
+  const canSend = useMemo(
+    () => text.trim().length > 0 && !sending,
+    [text, sending],
+  );
 
   const switchType = (next) => {
-    const p = new URLSearchParams(sp)
-    if (next === 'moment') p.delete('type')
-    else p.set('type', next)
-    setSp(p, { replace: true })
-    setDone(false)
-    setPublished(null)
-    setError('')
-  }
+    const p = new URLSearchParams(sp);
+    if (next === "moment") p.delete("type");
+    else p.set("type", next);
+    setSp(p, { replace: true });
+    setDone(false);
+    setPublished(null);
+    setError("");
+  };
 
   const connect = async (e) => {
-    e.preventDefault()
-    const t = tokenDraft.trim()
-    if (!t) return
-    setError('')
-    setInfo('')
-    setChecking(true)
+    e.preventDefault();
+    const t = tokenDraft.trim();
+    if (!t) return;
+    setError("");
+    setInfo("");
+    setChecking(true);
     try {
-      const r = await checkRepo({ repo, token: t })
-      gh.setToken(t)
-      setToken(t)
-      setSaved(true)
-      setInfo(`已连接 ${r.fullName}${r.private ? '（私有仓库）' : ''}`)
-      setTimeout(() => setSaved(false), 2400)
+      const r = await checkRepo({ repo, token: t });
+      gh.setToken(t);
+      setToken(t);
+      setSaved(true);
+      setInfo(`已连接 ${r.fullName}${r.private ? "（私有仓库）" : ""}`);
+      setTimeout(() => setSaved(false), 2400);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setChecking(false)
+      setChecking(false);
     }
-  }
+  };
 
   const logout = () => {
-    gh.clearToken()
-    setToken('')
-    setTokenDraft('')
-    setInfo('')
-    setError('')
-  }
+    gh.clearToken();
+    setToken("");
+    setTokenDraft("");
+    setInfo("");
+    setError("");
+  };
 
   const publish = async () => {
-    if (!canSend) return
-    setSending(true)
-    setError('')
+    if (!canSend) return;
+    setSending(true);
+    setError("");
     try {
-      const entry = `\n## ${date} | ${mood}\n${text.trim()}\n`
-      const message = `moments: ${date} ${text.trim().slice(0, 18)}`
+      const entry = `\n## ${date} | ${mood}\n${text.trim()}\n`;
+      const message = `moments: ${date} ${text.trim().slice(0, 18)}`;
 
-      let attempt = 0
+      let attempt = 0;
       // 文件可能刚好被别人（或另一台设备）改过，重试一次即可
       while (attempt < 2) {
         const file = await readFile({
@@ -104,8 +116,8 @@ export default function Write() {
           branch: site.branch,
           path: site.momentsPath,
           token,
-        })
-        if (!file) throw new Error('没找到 moments.md，检查路径是否正确')
+        });
+        if (!file) throw new Error("没找到 moments.md，检查路径是否正确");
         try {
           await writeFile({
             repo,
@@ -115,30 +127,31 @@ export default function Write() {
             text: `${file.text.trimEnd()}\n${entry}`,
             sha: file.sha,
             message,
-          })
-          break
+          });
+          break;
         } catch (err) {
-          attempt += 1
-          if (attempt >= 2) throw err
+          attempt += 1;
+          if (attempt >= 2) throw err;
         }
       }
 
-      setDone(true)
-      setText('')
+      setDone(true);
+      setText("");
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
-  const titleText = type === 'post' ? '写文章' : type === 'manage' ? '管理内容' : '写一条'
+  const titleText =
+    type === "post" ? "写文章" : type === "manage" ? "管理内容" : "写一条";
 
   const header = (
     <header className="write-header">
-      <Link to={type === 'moment' ? '/moments' : '/'} className="write-back">
+      <Link to={type === "moment" ? "/moments" : "/"} className="write-back">
         <Icon.arrowLeft />
-        {type === 'moment' ? '碎碎念' : '主页'}
+        {type === "moment" ? "碎碎念" : "主页"}
       </Link>
       <span className="write-title">{titleText}</span>
       <div className="write-head-actions">
@@ -151,8 +164,8 @@ export default function Write() {
           type="button"
           className="write-ghost"
           onClick={() => {
-            lockWrite()
-            setUnlocked(false)
+            lockWrite();
+            setUnlocked(false);
           }}
           title="锁定撰写入口"
         >
@@ -160,40 +173,44 @@ export default function Write() {
         </button>
       </div>
     </header>
-  )
+  );
 
   if (!unlocked) {
     return (
-      <div className="write-page">
+      <div
+        className={`write-page ${type === "post" ? "write-page--article" : ""}`}
+      >
         {header}
         <WriteGate onUnlocked={() => setUnlocked(true)} />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="write-page">
+    <div
+      className={`write-page ${type === "post" ? "write-page--article" : ""}`}
+    >
       {header}
 
       <nav className="write-tabs">
         <button
           type="button"
-          className={type === 'moment' ? 'write-tab active' : 'write-tab'}
-          onClick={() => switchType('moment')}
+          className={type === "moment" ? "write-tab active" : "write-tab"}
+          onClick={() => switchType("moment")}
         >
           碎碎念
         </button>
         <button
           type="button"
-          className={type === 'post' ? 'write-tab active' : 'write-tab'}
-          onClick={() => switchType('post')}
+          className={type === "post" ? "write-tab active" : "write-tab"}
+          onClick={() => switchType("post")}
         >
           文章
         </button>
         <button
           type="button"
-          className={type === 'manage' ? 'write-tab active' : 'write-tab'}
-          onClick={() => switchType('manage')}
+          className={type === "manage" ? "write-tab active" : "write-tab"}
+          onClick={() => switchType("manage")}
         >
           管理
         </button>
@@ -203,48 +220,60 @@ export default function Write() {
       {info && <div className="write-alert ok">{info}</div>}
 
       {!token ? (
-        <section className="write-card">
-          <h2>先连接你的 GitHub 仓库</h2>
-          <p className="write-note">
-            这一步只做一次。填写一个只对 <code>{repo}</code> 有写权限的 token，保存在这台设备的浏览器里，
-            不会上传到任何服务器（提交时由浏览器直接发给 GitHub）。
-          </p>
+        <>
+          <details open={type !== "post"} className="write-connect">
+            <summary>连接GitHub以发布（本机写作不需要连接）</summary>
+            <section className="write-card">
+              <h2>先连接你的 GitHub 仓库</h2>
+              <p className="write-note">
+                填写一个仅对 <code>{repo}</code> 有 Contents 读写权限的细粒度
+                token。默认仅在本次浏览会话保存，退出时清除；凭据只发送给 GitHub
+                API，不写进仓库或文章。
+              </p>
 
-          <ol className="write-steps">
-            <li>
-              打开{' '}
-              <a
-                href="https://github.com/settings/personal-access-tokens/new"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub → 新建 Fine-grained token
-              </a>
-            </li>
-            <li>
-              仓库访问选 <b>Only select repositories</b>，勾选 <code>96_blog</code>
-            </li>
-            <li>
-              Permissions → Repository permissions → <b>Contents</b> 设为 <b>Read and write</b>
-            </li>
-            <li>有效期建议 90 天，生成后复制那串 token 粘到下面</li>
-          </ol>
+              <ol className="write-steps">
+                <li>
+                  打开{" "}
+                  <a
+                    href="https://github.com/settings/personal-access-tokens/new"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    GitHub → 新建 Fine-grained token
+                  </a>
+                </li>
+                <li>
+                  仓库访问选 <b>Only select repositories</b>，勾选{" "}
+                  <code>96_blog</code>
+                </li>
+                <li>
+                  Permissions → Repository permissions → <b>Contents</b> 设为{" "}
+                  <b>Read and write</b>
+                </li>
+                <li>有效期建议选较短期限，生成后复制那串 token 粘到下面</li>
+              </ol>
 
-          <form onSubmit={connect} className="write-form">
-            <input
-              type="password"
-              className="write-input"
-              placeholder="github_pat_..."
-              value={tokenDraft}
-              onChange={(e) => setTokenDraft(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button type="submit" className="write-btn" disabled={checking || !tokenDraft.trim()}>
-              {checking ? '验证中…' : '验证并保存'}
-            </button>
-          </form>
-        </section>
+              <form onSubmit={connect} className="write-form">
+                <input
+                  type="password"
+                  className="write-input"
+                  placeholder="github_pat_..."
+                  value={tokenDraft}
+                  onChange={(e) => setTokenDraft(e.target.value)}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <button
+                  type="submit"
+                  className="write-btn"
+                  disabled={checking || !tokenDraft.trim()}
+                >
+                  {checking ? "验证中…" : "验证并连接"}
+                </button>
+              </form>
+            </section>
+          </details>
+        </>
       ) : published ? (
         <section className="write-card center">
           <div className="write-done-icon">
@@ -252,12 +281,25 @@ export default function Write() {
           </div>
           <h2>已提交，正在构建</h2>
           <p className="write-note">
-            《{published.title}》的正文和目录都已提交。Cloudflare 会自动构建，约 1–2 分钟后线上可见。
+            《{published.title}
+            》已完整提交到GitHub。若Cloudflare自动部署已启用，接下来会开始构建；提交成功不代表部署已完成。
           </p>
           <p className="write-hint">
-            在电脑上继续开发时注意：这次只改了 GitHub，本地文件还没变，先 <code>git pull</code>。
+            在电脑上继续开发时注意：这次只改了
+            GitHub，本地文件还没变，先在GitHub Desktop点击{" "}
+            <strong>Fetch origin → Pull origin</strong>，再继续修改。
           </p>
           <div className="write-actions">
+            {published.commitUrl && (
+              <a
+                className="write-btn ghost"
+                href={published.commitUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                查看GitHub提交
+              </a>
+            )}
             <a
               className="write-btn"
               href={`${site.siteUrl}/post/${published.slug}`}
@@ -275,18 +317,17 @@ export default function Write() {
             </button>
           </div>
         </section>
-      ) : type === 'manage' ? (
+      ) : type === "manage" ? (
         <ManagePanel token={token} />
-      ) : type === 'post' ? (
-        <PostEditor token={token} onPublished={setPublished} />
-      ) : done ? (
+      ) : type === "post" ? null : done ? (
         <section className="write-card center">
           <div className="write-done-icon">
             <Icon.spark />
           </div>
           <h2>已提交，正在构建</h2>
           <p className="write-note">
-            Cloudflare 会自动重新构建，大约 1–2 分钟后线上就能看到。刷新时记得强制刷新。
+            Cloudflare 会自动重新构建，大约 1–2
+            分钟后线上就能看到。刷新时记得强制刷新。
           </p>
           <p className="write-hint">
             在电脑上开发时注意：这条记录只提交到了 GitHub，本地文件还没变，先
@@ -301,7 +342,11 @@ export default function Write() {
             >
               打开线上碎碎念
             </a>
-            <button type="button" className="write-btn ghost" onClick={() => setDone(false)}>
+            <button
+              type="button"
+              className="write-btn ghost"
+              onClick={() => setDone(false)}
+            >
               再写一条
             </button>
           </div>
@@ -325,7 +370,7 @@ export default function Write() {
                   <button
                     key={m}
                     type="button"
-                    className={m === mood ? 'mood-btn active' : 'mood-btn'}
+                    className={m === mood ? "mood-btn active" : "mood-btn"}
                     onClick={() => setMood(m)}
                   >
                     {m}
@@ -345,16 +390,25 @@ export default function Write() {
 
           <div className="write-foot">
             <span className="write-count">{text.trim().length} 字</span>
-            <button type="button" className="write-btn" onClick={publish} disabled={!canSend}>
-              {sending ? '提交中…' : '发布'}
+            <button
+              type="button"
+              className="write-btn"
+              onClick={publish}
+              disabled={!canSend}
+            >
+              {sending ? "提交中…" : "发布"}
             </button>
           </div>
 
           <p className="write-hint">
-            发布 = 往仓库提交一次改动，站点会自动重新部署。断网或 token 过期时会提示原因。
+            发布 = 往仓库提交一次改动，站点会自动重新部署。断网或 token
+            过期时会提示原因。
           </p>
         </section>
       )}
+      {type === "post" && !published && (
+        <PostEditor token={token} onPublished={setPublished} />
+      )}
     </div>
-  )
+  );
 }

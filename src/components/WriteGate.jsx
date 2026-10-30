@@ -25,7 +25,7 @@ export default function WriteGate({ onUnlocked }) {
         </div>
         <h1>撰写入口</h1>
         <p className="write-gate-desc">
-          撰写功能只有拥有口令的管理员才可进行。
+          这是写作入口的界面门槛，不是安全认证。发布仍需GitHub仓库写权限。
           <br />
           如果你也想投稿内容，可以联系站主，欢迎大家来充实博客。
         </p>

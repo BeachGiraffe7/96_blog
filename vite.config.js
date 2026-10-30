@@ -10,13 +10,13 @@ export default defineConfig({
   server: {
     port: 5173,
     host: '0.0.0.0',
-    allowedHosts: true,
+    allowedHosts: (process.env.DEV_ALLOWED_HOSTS || '').split(',').filter(Boolean),
     open: false,
   },
   preview: {
     port: 4173,
     host: '0.0.0.0',
-    allowedHosts: true,
+    allowedHosts: (process.env.DEV_ALLOWED_HOSTS || '').split(',').filter(Boolean),
   },
   build: {
     rollupOptions: {
