@@ -6,12 +6,12 @@ import { site } from '../data/posts'
 import { applyTheme, watchSystem } from '../lib/theme'
 
 const nav = [
+  { to: '/about', label: '关于' },
   { to: '/', label: '主页', end: true },
   { to: '/archive', label: '归档' },
   { to: '/categories', label: '分类' },
   { to: '/moments', label: '碎碎念' },
   { to: '/growth', label: '成长' },
-  { to: '/about', label: '关于' },
 ]
 
 export default function Header({ query, onQueryChange }) {
@@ -62,15 +62,6 @@ export default function Header({ query, onQueryChange }) {
               {item.label}
             </NavLink>
           ))}
-          <a
-            className="nav-link"
-            href={`https://github.com/${site.repo}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-            <span className="nav-ext">↗</span>
-          </a>
         </nav>
 
         <div className="header-actions">

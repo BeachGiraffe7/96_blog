@@ -117,13 +117,6 @@ export default function About() {
           <Link to="/">
             从最近的文章开始 <span aria-hidden="true">→</span>
           </Link>
-          <a
-            href={`https://github.com/${site.repo}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            站点源码 ↗
-          </a>
         </div>
       </section>
     </div>

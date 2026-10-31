@@ -18,6 +18,9 @@ try {
  }
  await page.goto(base+'/about')
  await page.locator('.about-intro h1').waitFor()
+ assert.deepEqual((await page.locator('.main-nav a').allTextContents()).map(s=>s.trim()).slice(0,2),['关于','主页'])
+ assert.equal(await page.locator('a[href*="github.com/BeachGiraffe7/96_blog"]').count(),0)
+ assert.equal(await page.getByText('站点源码',{exact:false}).count(),0)
  await page.evaluate(()=>document.fonts.ready)
  assert.equal(await page.locator('.about-start time').getAttribute('datetime'),'2026-10-28')
  assert.equal(await page.locator('.about-entry').count(),3)
@@ -36,6 +39,7 @@ try {
  await page.evaluate(async()=>{const theme=await import('/src/lib/theme.js');theme.setTheme('light')})
  await page.goto(base+'/')
  await page.locator('.post-list').waitFor()
+ assert.equal(await page.locator('a[href*="github.com/BeachGiraffe7/96_blog"]').count(),0)
  assert.equal(await page.locator('.main-nav a[href="/tags"]').count(),0)
  assert.equal(await page.locator('.post-tags').count(),0)
  assert.equal(await page.locator('.col-right a[href="/tags"]').count(),0)

@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Icon } from './Icons'
-import { categories, categoryCount, activeSeries, seriesCount, site } from '../data/posts'
+import {
+  categories,
+  categoryCount,
+  activeSeries,
+  seriesCount,
+  site,
+} from '../data/posts'
 
 export function ProfileCard() {
   return (
@@ -12,23 +18,25 @@ export function ProfileCard() {
       </div>
       <h1 className="profile-name">{site.author}</h1>
       <p className="profile-tagline">{site.tagline}</p>
-      <div className="profile-links">
-        {site.links.map((l) => {
-          const Ico = Icon[l.icon]
-          return (
-            <a
-              key={l.label}
-              href={l.href}
-              className="profile-link"
-              aria-label={l.label}
-              target={l.href.startsWith('http') ? '_blank' : undefined}
-              rel="noreferrer"
-            >
-              <Ico />
-            </a>
-          )
-        })}
-      </div>
+      {site.links.length > 0 && (
+        <div className="profile-links">
+          {site.links.map((l) => {
+            const Ico = Icon[l.icon]
+            return (
+              <a
+                key={l.label}
+                href={l.href}
+                className="profile-link"
+                aria-label={l.label}
+                target={l.href.startsWith('http') ? '_blank' : undefined}
+                rel="noreferrer"
+              >
+                <Ico />
+              </a>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }
@@ -45,7 +53,10 @@ export function CategoryCard() {
           const n = categoryCount(c.name)
           return (
             <li key={c.name}>
-              <Link to={`/category/${encodeURIComponent(c.name)}`} className="side-row">
+              <Link
+                to={`/category/${encodeURIComponent(c.name)}`}
+                className="side-row"
+              >
                 <span className="side-row-label">{c.name}</span>
                 {n > 0 && <span className="count-badge">{n}</span>}
               </Link>
@@ -83,7 +94,10 @@ export function SeriesCard() {
               const Ico = Icon[s.icon] || Icon.layers
               return (
                 <li key={s.name}>
-                  <Link to={`/series/${encodeURIComponent(s.name)}`} className="side-row series-row">
+                  <Link
+                    to={`/series/${encodeURIComponent(s.name)}`}
+                    className="side-row series-row"
+                  >
                     <span className="series-icon">
                       <Ico />
                     </span>

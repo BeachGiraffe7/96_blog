@@ -20,13 +20,7 @@ export const site = {
   livePostsPath: 'src/data/livePosts.json',
   hiddenPath: 'src/data/hidden.json',
   siteUrl: 'https://beachgiraffe.pages.dev',
-  links: [
-    {
-      icon: 'github',
-      href: 'https://github.com/BeachGiraffe7/96_blog',
-      label: '站点仓库',
-    },
-  ],
+  links: [],
 }
 
 // 分类
