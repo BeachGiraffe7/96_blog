@@ -62,6 +62,14 @@ export default function Header({ query, onQueryChange }) {
               {item.label}
             </NavLink>
           ))}
+          <a
+            className="nav-link"
+            href={site.github}
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub<span className="nav-ext">↗</span>
+          </a>
         </nav>
 
         <div className="header-actions">

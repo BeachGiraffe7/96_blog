@@ -20,6 +20,9 @@ export const site = {
   livePostsPath: 'src/data/livePosts.json',
   hiddenPath: 'src/data/hidden.json',
   siteUrl: 'https://beachgiraffe.pages.dev',
+  github: 'https://github.com/BeachGiraffe7',
+  email: '1502765800@qq.com',
+  wechat: 'Dec21_Hello',
   links: [],
 }
 

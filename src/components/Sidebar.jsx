@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Icon } from './Icons'
+import ContactLinks from './ContactLinks'
 import {
   categories,
   categoryCount,
@@ -18,25 +19,7 @@ export function ProfileCard() {
       </div>
       <h1 className="profile-name">{site.author}</h1>
       <p className="profile-tagline">{site.tagline}</p>
-      {site.links.length > 0 && (
-        <div className="profile-links">
-          {site.links.map((l) => {
-            const Ico = Icon[l.icon]
-            return (
-              <a
-                key={l.label}
-                href={l.href}
-                className="profile-link"
-                aria-label={l.label}
-                target={l.href.startsWith('http') ? '_blank' : undefined}
-                rel="noreferrer"
-              >
-                <Ico />
-              </a>
-            )
-          })}
-        </div>
-      )}
+      <ContactLinks />
     </section>
   )
 }

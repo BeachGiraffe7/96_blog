@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { site } from '../data/posts'
 import { Icon } from '../components/Icons'
 import '../styles/about.css'
+import ContactLinks from '../components/ContactLinks'
 
 const entries = [
   {
@@ -118,6 +119,11 @@ export default function About() {
             从最近的文章开始 <span aria-hidden="true">→</span>
           </Link>
         </div>
+      </section>
+      <section className="about-contact" aria-labelledby="about-contact-title">
+        <p className="about-kicker">保持联系</p>
+        <h2 id="about-contact-title">也可以在这里找到我。</h2>
+        <ContactLinks detailed />
       </section>
     </div>
   )
