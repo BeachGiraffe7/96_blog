@@ -23,16 +23,66 @@ function WechatIcon() {
 }
 
 export default function ContactLinks({ detailed = false }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(null)
   const [message, setMessage] = useState('')
   const panelId = useId()
-  async function copyWechat() {
+  const channels = {
+    email: {
+      label: 'QQ 邮箱',
+      name: '邮箱地址',
+      value: site.email,
+      Icon: Icon.mail,
+    },
+    wechat: {
+      label: '微信',
+      name: '微信号',
+      value: site.wechat,
+      Icon: WechatIcon,
+    },
+  }
+  async function copyContact(kind) {
+    const contact = channels[kind]
     try {
-      await navigator.clipboard.writeText(site.wechat)
-      setMessage('微信号已复制')
+      await navigator.clipboard.writeText(contact.value)
+      setMessage(`${contact.name}已复制`)
     } catch {
-      setMessage('未能自动复制，请选中微信号手动复制。')
+      setMessage(`未能自动复制，请选中${contact.name}手动复制。`)
     }
+  }
+  function renderContact(kind) {
+    const contact = channels[kind]
+    const ContactIcon = contact.Icon
+    return detailed ? (
+      <div className="contact-option">
+        <ContactIcon />
+        <span>
+          <strong>{contact.label}</strong>
+          <span className="contact-id">{contact.value}</span>
+          <button
+            type="button"
+            className="contact-copy"
+            onClick={() => copyContact(kind)}
+          >
+            复制{contact.name}
+          </button>
+        </span>
+      </div>
+    ) : (
+      <button
+        type="button"
+        className="contact-option"
+        aria-label={`查看${contact.label}联系方式`}
+        title={contact.label}
+        aria-expanded={open === kind}
+        aria-controls={panelId}
+        onClick={() => {
+          setOpen(open === kind ? null : kind)
+          setMessage('')
+        }}
+      >
+        <ContactIcon />
+      </button>
+    )
   }
   return (
     <div
@@ -43,6 +93,7 @@ export default function ContactLinks({ detailed = false }) {
       }
     >
       <div className="contact-options">
+        {renderContact('email')}
         <a
           className="contact-option"
           href={site.github}
@@ -59,58 +110,18 @@ export default function ContactLinks({ detailed = false }) {
             </span>
           )}
         </a>
-        <a
-          className="contact-option"
-          href={`mailto:${site.email}`}
-          aria-label={`QQ 邮箱：${site.email}`}
-          title={`QQ 邮箱：${site.email}`}
-        >
-          <Icon.mail />
-          {detailed && (
-            <span>
-              <strong>QQ 邮箱</strong>
-              <span>{site.email}</span>
-            </span>
-          )}
-        </a>
-        {detailed ? (
-          <div className="contact-option contact-wechat">
-            <WechatIcon />
-            <span>
-              <strong>微信</strong>
-              <span className="contact-id">{site.wechat}</span>
-              <button
-                type="button"
-                className="contact-copy"
-                onClick={copyWechat}
-              >
-                复制微信号
-              </button>
-            </span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="contact-option"
-            aria-label="查看微信联系方式"
-            title="微信"
-            aria-expanded={open}
-            aria-controls={panelId}
-            onClick={() => {
-              setOpen(!open)
-              setMessage('')
-            }}
-          >
-            <WechatIcon />
-          </button>
-        )}
+        {renderContact('wechat')}
       </div>
       {!detailed && open && (
-        <div className="contact-wechat-panel" id={panelId}>
-          <span>微信号</span>
-          <span className="contact-id">{site.wechat}</span>
-          <button type="button" className="contact-copy" onClick={copyWechat}>
-            复制微信号
+        <div className="contact-detail-panel" id={panelId}>
+          <span>{channels[open].name}</span>
+          <span className="contact-id">{channels[open].value}</span>
+          <button
+            type="button"
+            className="contact-copy"
+            onClick={() => copyContact(open)}
+          >
+            复制{channels[open].name}
           </button>
         </div>
       )}
