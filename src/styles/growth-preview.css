@@ -1182,6 +1182,9 @@
   grid-template-columns: minmax(0, 1fr) 340px;
 }
 .gw-live .cal-card {
+  /* Calendar scrolls with the rail instead of covering following cards. */
+  position: static;
+  flex-shrink: 0;
   padding: 12px;
   border-radius: 12px;
   background: var(--gw-paper);

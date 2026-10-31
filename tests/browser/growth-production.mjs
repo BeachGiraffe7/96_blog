@@ -227,6 +227,23 @@ try {
   )
   assert.equal(await p.getByRole('checkbox').count(), 1)
   await shot(p, 'desktop-live-daily')
+  // Regression: an independently sticky calendar used to cover rail siblings.
+  for (const width of [1440, 1280, 1024]) {
+    await p.setViewportSize({ width, height: 900 })
+    for (const y of [0, 300, 650, 1000, 1500]) {
+      await p.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), y)
+      await p.waitForTimeout(50)
+      const overlaps = await p.locator('.gw-grid > aside').evaluate(aside => {
+        const boxes = [...aside.children].map(el => el.getBoundingClientRect())
+        return boxes.slice(1).some((box, i) => boxes[i].bottom > box.top - 15)
+      })
+      assert.equal(overlaps, false, `growth rail overlap at ${width}px, scroll ${y}`)
+    }
+  }
+  await p.setViewportSize({ width: 1440, height: 900 })
+  await p.evaluate(() => window.scrollTo({ top: 650, behavior: 'instant' }))
+  await p.screenshot({path: `${out}/desktop-growth-scrolled.png`})
+  await p.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await nav(p, '长期项目').click()
   assert.equal(await p.locator('.gw-project-card').count(), 0)
   await p.getByRole('button', { name: '＋ 新建长期项目' }).click()
@@ -395,6 +412,15 @@ try {
   )
   await p.setViewportSize({ width: 390, height: 844 })
   await shot(p, 'mobile-live-daily')
+  await p.locator('.cal-bar').click()
+  assert.equal(await p.locator('.cal-bar').getAttribute('aria-expanded'), 'true')
+  await shot(p, 'mobile-calendar-expanded')
+  const mobileOverlap = await p.locator('.gw-grid > aside').evaluate(aside => {
+    const boxes = [...aside.children].map(el => el.getBoundingClientRect())
+    return boxes.slice(1).some((box, i) => boxes[i].bottom > box.top - 15)
+  })
+  assert.equal(mobileOverlap, false)
+  await p.locator('.cal-bar').click()
   await nav(p, '长期项目').click()
   await shot(p, 'mobile-live-projects')
   await nav(p, '每周复盘').click()

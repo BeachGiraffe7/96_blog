@@ -1,100 +1,131 @@
 import { Link } from 'react-router-dom'
-import { PageHead } from '../components/Layout'
-import { posts, activeSeries, site, stats, timeline, moments } from '../data/posts'
+import { site } from '../data/posts'
 import { Icon } from '../components/Icons'
+import '../styles/about.css'
+
+const entries = [
+  {
+    to: '/archive',
+    number: '01',
+    title: '学习笔记',
+    detail: '整理学过的知识、做过的尝试，让零散的内容有个可以回看的地方。',
+    action: '浏览文章',
+  },
+  {
+    to: '/moments',
+    number: '02',
+    title: '碎碎念',
+    detail: '不一定要写成长文。一段想法、一个问题，也可以先记下来。',
+    action: '看看短记录',
+  },
+  {
+    to: '/growth',
+    number: '03',
+    title: '成长手记',
+    detail: '记录每日学习与长期计划，导出一周记录，再借助 AI 整理复盘。',
+    action: '进入私密专栏',
+    private: true,
+  },
+]
 
 export default function About() {
-  const s = stats()
   return (
-    <div className="feed">
-      <PageHead title="关于" desc="这里是我的数字书房。" />
-
-      <section className="card about-card">
-        <div className="about-top">
-          <div className="avatar lg with-photo">
-            <img src={site.avatar} alt={site.author} />
-          </div>
-          <div>
-            <h2 className="about-name">{site.author}</h2>
-            <p className="about-tagline">{site.tagline}</p>
-            <div className="about-social">
-              {site.links.map((l) => {
-                const Ico = Icon[l.icon]
-                return (
-                  <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="about-social-item">
-                    <Ico />
-                    {l.label}
-                  </a>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="about-body">
-          <p>{site.bio}</p>
-          <p>
-            这个站点用来放两类东西：一类是学习过程中整理出来的笔记，尽量写清楚"为什么"而不只是"是什么"；
-            另一类是日记式的短记录，想到什么写什么，不做修饰。它们混在同一个列表里，按时间倒序排列。
+    <div className="about-journal">
+      <div className="about-breadcrumb">
+        <span>ABOUT / 关于</span>
+        <Link to="/">返回主页 ↗</Link>
+      </div>
+      <section className="about-intro" aria-labelledby="about-title">
+        <div className="about-intro-copy">
+          <p className="about-kicker">你好，这里是{site.author}。</p>
+          <h1 id="about-title">
+            记录学过的，
+            <br />
+            也留下还没想明白的。
+          </h1>
+          <p className="about-lead">
+            学习笔记、零碎想法，还有每天一点点的积累。
+            <br className="about-desktop-break" />
+            这个站点，把它们放在一起。
           </p>
-
-          <h3>现在在做</h3>
-          <ul className="about-list">
-            <li>跟着米醋电子的 TI M0 系列课程做电赛特训，正在调循迹环的参数。</li>
-            <li>把每一讲的课程笔记整理进博客，边学边写，顺便逼自己讲清楚。</li>
-            <li>在碎碎念里记录每天的心情和零碎想法。</li>
-          </ul>
-
-          <h3>学习轨迹</h3>
-          <ul className="about-timeline">
-            {timeline.map((t) => (
-              <li key={t.time}>
-                <span className="timeline-time">{t.time}</span>
-                <span className="timeline-text">{t.text}</span>
-              </li>
-            ))}
-          </ul>
-
-          <h3>关于这个站</h3>
-          <ul className="about-list">
-            <li>前端：React + Vite，纯手写 CSS，没有 UI 框架。</li>
-            <li>文章：Markdown 源文件直接放进项目（src/content/notes），改完即生效。</li>
-            <li>版心 1700px，为 PC 端阅读设计。</li>
-            <li>
-              除了长文，还有 <Link to="/moments">碎碎念</Link>：不够长、但值得记下来的想法，目前已写了{' '}
-              {moments.length} 条。
-            </li>
-          </ul>
-
-          <div className="about-numbers">
-            <div>
-              <strong>{s.posts}</strong>
-              <span>文章</span>
-            </div>
-            <div>
-              <strong>{s.words.toLocaleString('en-US')}</strong>
-              <span>总字数</span>
-            </div>
-            <div>
-              <strong>{s.days}</strong>
-              <span>运行天数</span>
-            </div>
-            <div>
-              <strong>{activeSeries().length}</strong>
-              <span>系列</span>
-            </div>
-          </div>
-
-          <p className="about-sign">— 写于每一个想记点什么的晚上</p>
+        </div>
+        <figure className="about-portrait">
+          <img
+            src={site.avatar}
+            alt="海滩长颈鹿的站点头像：戴草帽的玩偶，身后是海"
+            width="240"
+            height="240"
+          />
+          <figcaption>
+            <span>{site.author}</span>
+            <span>{site.tagline}</span>
+          </figcaption>
+        </figure>
+      </section>
+      <section className="about-start" aria-labelledby="about-start-title">
+        <div className="about-start-date">
+          <span>站点正式上线</span>
+          <time dateTime={site.since}>2026.10.28</time>
+        </div>
+        <div>
+          <h2 id="about-start-title">从这一天开始，有了自己的记录空间。</h2>
+          <p>
+            这里的上线日期从 10 月 28
+            日算起。笔记可以写于更早的时候，但那不代表站点已经运行了那么久。
+          </p>
         </div>
       </section>
-
-      <div className="about-cta">
-        <Link to="/" className="btn-primary">
-          去看看文章
-        </Link>
-        <span className="about-cta-tip">共 {posts.length} 篇，最近更新 {s.latest}</span>
-      </div>
+      <section
+        className="about-contents"
+        aria-labelledby="about-contents-title"
+      >
+        <div className="about-section-heading">
+          <p className="about-kicker">在这里，可以看到什么</p>
+          <h2 id="about-contents-title">长一点，短一点，都有去处。</h2>
+        </div>
+        <div className="about-entry-list">
+          {entries.map((entry) => (
+            <Link to={entry.to} key={entry.to} className="about-entry">
+              <span className="about-entry-number">{entry.number}</span>
+              <div>
+                <h3>
+                  {entry.title}
+                  {entry.private && (
+                    <span className="about-private">
+                      <Icon.lock />
+                      私密
+                    </span>
+                  )}
+                </h3>
+                <p>{entry.detail}</p>
+              </div>
+              <span className="about-entry-action">
+                {entry.action}
+                <span aria-hidden="true">↗</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="about-closing" aria-labelledby="about-closing-title">
+        <p className="about-kicker">写在最后</p>
+        <h2 id="about-closing-title">不急着把“关于我”写完整。</h2>
+        <p>
+          先让笔记和记录慢慢补上。比起一份完整的自我介绍，更希望以后回到这里时，还能看见当时学了什么、卡在哪里，又往前走了哪一步。
+        </p>
+        <div className="about-closing-links">
+          <Link to="/">
+            从最近的文章开始 <span aria-hidden="true">→</span>
+          </Link>
+          <a
+            href={`https://github.com/${site.repo}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            站点源码 ↗
+          </a>
+        </div>
+      </section>
     </div>
   )
 }

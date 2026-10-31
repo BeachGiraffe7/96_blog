@@ -10,15 +10,20 @@ export default function Home({ mode = 'all' }) {
   const q = (sp.get('q') || '').trim().toLowerCase()
 
   let list = [...posts].sort((a, b) => b.date.localeCompare(a.date))
-  if (mode === 'category' && name) list = list.filter((p) => p.category === name)
+  if (mode === 'category' && name)
+    list = list.filter((p) => p.category === name)
   if (mode === 'tag' && name) list = list.filter((p) => p.tags.includes(name))
   if (q)
     list = list.filter((p) =>
-      [p.title, p.excerpt, p.category, ...p.tags].join(' ').toLowerCase().includes(q),
+      [p.title, p.excerpt, p.category, ...p.tags]
+        .join(' ')
+        .toLowerCase()
+        .includes(q),
     )
 
   const filtered = Boolean((name && mode !== 'all') || q)
-  const cat = mode === 'category' && name ? categories.find((c) => c.name === name) : null
+  const cat =
+    mode === 'category' && name ? categories.find((c) => c.name === name) : null
   // 分类页顶部列出这个方向下的系列，等于「分类 → 系列」的第二层入口
   const subs = mode === 'category' && name ? seriesInCategory(name) : []
 
@@ -73,7 +78,9 @@ export default function Home({ mode = 'all' }) {
       {list.length === 0 ? (
         <div className="empty">
           <Icon.search />
-          <p>{mode === 'tag' ? '这个标签下还没有文章' : '没有找到相关的文章'}</p>
+          <p>
+            {mode === 'tag' ? '这个标签下还没有文章' : '没有找到相关的文章'}
+          </p>
           <Link to="/" className="empty-link">
             回到全部文章
           </Link>
@@ -81,7 +88,7 @@ export default function Home({ mode = 'all' }) {
       ) : (
         <div className="post-list">
           {list.map((p) => (
-            <PostCard key={p.slug} post={p} />
+            <PostCard key={p.slug} post={p} showTags={mode !== 'all'} />
           ))}
         </div>
       )}
