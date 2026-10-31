@@ -6,13 +6,12 @@ import { site } from '../data/posts'
 import { applyTheme, watchSystem } from '../lib/theme'
 
 const nav = [
+  { to: '/about', label: '关于' },
   { to: '/', label: '主页', end: true },
   { to: '/archive', label: '归档' },
   { to: '/categories', label: '分类' },
-  { to: '/tags', label: '标签' },
   { to: '/moments', label: '碎碎念' },
   { to: '/growth', label: '成长' },
-  { to: '/about', label: '关于' },
 ]
 
 export default function Header({ query, onQueryChange }) {
@@ -56,14 +55,20 @@ export default function Header({ query, onQueryChange }) {
               key={item.to}
               to={item.to}
               end={item.end}
-              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              className={({ isActive }) =>
+                isActive ? 'nav-link active' : 'nav-link'
+              }
             >
               {item.label}
             </NavLink>
           ))}
-          <a className="nav-link" href="https://github.com" target="_blank" rel="noreferrer">
-            GitHub
-            <span className="nav-ext">↗</span>
+          <a
+            className="nav-link"
+            href={site.github}
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub<span className="nav-ext">↗</span>
           </a>
         </nav>
 
@@ -77,7 +82,10 @@ export default function Header({ query, onQueryChange }) {
             <Icon.plus />
           </Link>
 
-          <form className={open ? 'search-box open' : 'search-box'} onSubmit={submit}>
+          <form
+            className={open ? 'search-box open' : 'search-box'}
+            onSubmit={submit}
+          >
             <input
               ref={inputRef}
               value={query}
@@ -86,14 +94,21 @@ export default function Header({ query, onQueryChange }) {
               placeholder="搜索文章…"
               aria-label="搜索文章"
             />
-            <button type="button" className="icon-btn" onClick={() => setOpen((v) => !v)} aria-label="搜索">
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="搜索"
+            >
               <Icon.search />
             </button>
           </form>
 
           <button
             type="button"
-            className={panel ? 'icon-btn theme-toggle active' : 'icon-btn theme-toggle'}
+            className={
+              panel ? 'icon-btn theme-toggle active' : 'icon-btn theme-toggle'
+            }
             onClick={() => setPanel((v) => !v)}
             aria-label="外观设置"
             aria-expanded={panel}

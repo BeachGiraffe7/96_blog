@@ -1,5 +1,12 @@
 import { Icon } from './Icons'
-import { formatNumber, stats, allTags, daysAgo, moments, site } from '../data/posts'
+import {
+  formatNumber,
+  stats,
+  allTags,
+  daysAgo,
+  moments,
+  site,
+} from '../data/posts'
 import { Link } from 'react-router-dom'
 
 export function StatsCard() {
@@ -7,7 +14,6 @@ export function StatsCard() {
   const rows = [
     { icon: 'text', label: '文章', value: s.posts },
     { icon: 'folder', label: '分类', value: s.categories },
-    { icon: 'tag', label: '标签', value: s.tags },
     { icon: 'layers', label: '系列', value: s.series },
     { icon: 'chart', label: '总字数', value: formatNumber(s.words) },
     { icon: 'eye', label: '总阅读', value: formatNumber(s.views) },
@@ -48,7 +54,11 @@ export function TagsCard({ limit = 14 }) {
       </div>
       <div className="tag-cloud">
         {tags.map((t) => (
-          <Link key={t.name} to={`/tag/${encodeURIComponent(t.name)}`} className="tag-pill">
+          <Link
+            key={t.name}
+            to={`/tag/${encodeURIComponent(t.name)}`}
+            className="tag-pill"
+          >
             {t.name}
             <span className="tag-pill-count">{t.count}</span>
           </Link>
@@ -62,7 +72,9 @@ export function TagsCard({ limit = 14 }) {
 }
 
 export function MomentsCard({ limit = 3 }) {
-  const list = [...moments].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit)
+  const list = [...moments]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, limit)
   return (
     <section className="card side-card">
       <div className="side-card-head">
