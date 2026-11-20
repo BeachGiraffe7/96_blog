@@ -5,6 +5,7 @@
  */
 
 import { headingGenerator as makeIdGen } from "../../lib/article/toc";
+import { highlightC, HIGHLIGHT_LANGS } from "../../lib/article/highlight";
 const safeURL = (url, image = false) => {
   const u = String(url || "").trim();
   if (
@@ -23,15 +24,18 @@ function renderInline(text, keyPrefix) {
   let rest = text;
   let key = 0;
 
+  // 第一项是反斜杠转义（\. \( \* 等），原样输出后面那个字符
   const pattern =
-    /(`[^`]+`)|(\*\*[^*]+\*\*)|(\*[^*\s][^*]*\*)|(\[[^\]]+\]\([^)]+\))/g;
+    /(\\[\\`*_{}[\]()#+\-.!|<>~])|(`[^`]+`)|(\*\*[^*]+\*\*)|(\*[^*\s][^*]*\*)|(\[[^\]]+\]\([^)]+\))/g;
   let last = 0;
   let m;
 
   while ((m = pattern.exec(rest)) !== null) {
     if (m.index > last) nodes.push(rest.slice(last, m.index));
     const token = m[0];
-    if (token.startsWith("`")) {
+    if (token.startsWith("\\")) {
+      nodes.push(token.slice(1));
+    } else if (token.startsWith("`")) {
       nodes.push(
         <code key={`${keyPrefix}-c${key++}`}>{token.slice(1, -1)}</code>,
       );
@@ -65,7 +69,19 @@ function CodeBlock({ lang, lines }) {
     <div className="md-code">
       {lang && <span className="md-code-lang">{lang}</span>}
       <pre>
-        <code>{lines.join("\n")}</code>
+        <code>
+          {HIGHLIGHT_LANGS.has(String(lang).toLowerCase())
+            ? highlightC(lines.join("\n")).map((tk, i) =>
+                tk.t ? (
+                  <span key={i} className={`hl-${tk.t}`}>
+                    {tk.v}
+                  </span>
+                ) : (
+                  tk.v
+                ),
+              )
+            : lines.join("\n")}
+        </code>
       </pre>
     </div>
   );

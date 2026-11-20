@@ -2,7 +2,7 @@
 export const MAX_FILE_BYTES = 20 * 1024 * 1024;
 export const MAX_TOTAL_BYTES = 80 * 1024 * 1024;
 export const ACCEPT_ARTICLE =
-  ".md,.markdown,.txt,.docx,.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif";
+  ".md,.markdown,.txt,.docx,.pdf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif,.zip";
 export const uid = () =>
   globalThis.crypto?.randomUUID?.() ||
   `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;

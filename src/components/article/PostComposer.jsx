@@ -13,7 +13,14 @@ import {
   inspectHTML,
   safeName,
 } from "../../lib/article/article";
-import { fileToMarkdown } from "../../lib/importDocs";
+import { fileToMarkdown, decodeFileText } from "../../lib/importDocs";
+import {
+  cleanImportedMarkdown,
+  splitByImages,
+  imageKey,
+  readAnyZip,
+  pickMarkdownBundle,
+} from "../../lib/mdImport";
 import { htmlToMarkdown, looksRich } from "../../lib/htmlToMarkdown";
 import { loadDraft, saveDraft, clearDraft } from "../../lib/article/drafts";
 import { downloadBlob, readArticleZIP } from "../../lib/article/zip";
@@ -264,11 +271,88 @@ export default function PostComposer({
       (n, a) => n + a.size,
       0,
     );
+    // 一起选中的图片：给同时导入的 Markdown 按文件名配对
+    const isMd = (f) => /\.(md|markdown)$/i.test(f.name);
+    const pickedImages = new Map();
+    if (list.some(isMd))
+      for (const f of list)
+        if (/\.(png|jpe?g|webp|gif)$/i.test(f.name))
+          pickedImages.set(imageKey(f.name), f);
+    const usedImages = new Set();
+    let titleFromDoc = "";
+    // Markdown → 若干文字块 + 图片块；图片找不到时留一行提示，不留坏图
+    const addMarkdown = async (text, findImage, label) => {
+      const md = cleanImportedMarkdown(text);
+      let missing = 0;
+      for (const part of splitByImages(md)) {
+        if (part.type === "markdown") {
+          let t = part.text;
+          // 文章还没标题时，用文档开头的一级标题当标题
+          const h1 = t.match(/^#\s+(.+)\n?/);
+          if (h1 && !titleFromDoc && !latest.current.doc?.meta?.title?.trim()) {
+            titleFromDoc = h1[1].trim();
+            t = t.slice(h1[0].length).trim();
+          }
+          if (t) blocks.push({ id: uid(), type: "markdown", text: t });
+          continue;
+        }
+        const hit = findImage(part.src);
+        if (!hit) {
+          missing++;
+          blocks.push({ id: uid(), type: "markdown", text: `> 图片未导入：${imageKey(part.src)}` });
+          continue;
+        }
+        if (total + hit.size > MAX_TOTAL_BYTES)
+          throw Error("文章附件总量超过80MB，请减少图片。");
+        const a = await readAsset(hit);
+        newAssets[a.id] = a;
+        total += a.size;
+        blocks.push({ id: uid(), type: "image", assetId: a.id, title: a.name, alt: "" });
+      }
+      if (missing)
+        warnings.push(`${label}：${missing}张图片没找到，请连同图片一起导入（直接选飞书导出的ZIP最省事）`);
+    };
     try {
       for (let i = 0; i < list.length; i++) {
         const f = list[i];
         setBusy(`导入 ${i + 1}/${list.length} · ${f.name}`);
         try {
+          // 和 Markdown 一起选中的图片，等 Markdown 配对完再处理
+          if (pickedImages.size && /\.(png|jpe?g|webp|gif)$/i.test(f.name)) continue;
+          if (/\.zip$/i.test(f.name)) {
+            const files = await readAnyZip(await f.arrayBuffer());
+            if (files.some((x) => x.path === "article.json"))
+              throw Error("这是本编辑器导出的文章包，请用右侧“恢复文章包”打开");
+            const bundles = pickMarkdownBundle(files);
+            if (!bundles.length) throw Error("ZIP 里没有找到 Markdown 文件");
+            for (const b of bundles) {
+              const name = b.path.split("/").pop();
+              await addMarkdown(
+                new TextDecoder("utf-8").decode(b.bytes),
+                (src) => {
+                  const img = b.findImage(src);
+                  return img ? new File([img.bytes], img.path.split("/").pop()) : null;
+                },
+                name,
+              );
+            }
+            continue;
+          }
+          if (isMd(f)) {
+            const { text, warnings: w } = await decodeFileText(f);
+            warnings.push(...w.map((x) => `${f.name}：${x}`));
+            await addMarkdown(
+              text,
+              (src) => {
+                const key = imageKey(src);
+                const img = pickedImages.get(key) || pickedImages.get(key.split("/").pop());
+                if (img) usedImages.add(img);
+                return img || null;
+              },
+              f.name,
+            );
+            continue;
+          }
           if (/\.(pdf|html?|png|jpe?g|webp|gif)$/i.test(f.name) && !extract) {
             if (total + f.size > MAX_TOTAL_BYTES)
               throw Error("文章附件总量超过80MB，请减少大文件。");
@@ -293,7 +377,25 @@ export default function PostComposer({
           errors.push(`${f.name}：${e.message}`);
         }
       }
+      // 一起选中、但 Markdown 里没用到的图片，照常作为图片块放在最后
+      for (const img of pickedImages.values()) {
+        if (usedImages.has(img)) continue;
+        try {
+          if (total + img.size > MAX_TOTAL_BYTES)
+            throw Error("文章附件总量超过80MB，请减少大文件。");
+          const a = await readAsset(img);
+          newAssets[a.id] = a;
+          total += a.size;
+          blocks.push({ id: uid(), type: "image", assetId: a.id, title: a.name, alt: "" });
+        } catch (e) {
+          errors.push(`${img.name}：${e.message}`);
+        }
+      }
       setAssets((a) => ({ ...a, ...newAssets }));
+      if (titleFromDoc)
+        setDoc((d) =>
+          d.meta.title.trim() ? d : { ...d, meta: { ...d.meta, title: titleFromDoc } },
+        );
       if (blocks.length) {
         insertBlocks(blocks, after);
         setActive(blocks.at(-1).id);
