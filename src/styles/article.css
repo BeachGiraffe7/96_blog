@@ -621,6 +621,14 @@
   background: transparent;
   padding: 0;
 }
+/* C/C++ 代码高亮（深色底） */
+.article-components .md-code .hl-com { color: #8b95a7; font-style: italic; }
+.article-components .md-code .hl-str { color: #b5e0a0; }
+.article-components .md-code .hl-kw { color: #f49ac1; }
+.article-components .md-code .hl-num { color: #f6c177; }
+.article-components .md-code .hl-fn { color: #8ec7ff; }
+.article-components .md-code .hl-mac { color: #c9b2ff; }
+.article-components .md-code .hl-pre { color: #f6a878; }
 .article-components .md-code-lang {
   display: block;
   font-size: 12px;
