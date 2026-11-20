@@ -279,6 +279,14 @@ export default function PostComposer({
         if (/\.(png|jpe?g|webp|gif)$/i.test(f.name))
           pickedImages.set(imageKey(f.name), f);
     const usedImages = new Set();
+    // 文章里已有“图片未导入”占位：之后单独选中的同名图片直接填回原位置
+    const placeholders = new Map();
+    if (!list.some(isMd))
+      for (const b of latest.current.doc.blocks || []) {
+        const m = b.type === "markdown" && b.text.trim().match(/^>\s*图片未导入：(.+)$/);
+        if (m) placeholders.set(imageKey(m[1].trim()).split("/").pop(), b.id);
+      }
+    const fills = {};
     let titleFromDoc = "";
     // Markdown → 若干文字块 + 图片块；图片找不到时留一行提示，不留坏图
     const addMarkdown = async (text, findImage, label) => {
@@ -310,7 +318,7 @@ export default function PostComposer({
         blocks.push({ id: uid(), type: "image", assetId: a.id, title: a.name, alt: "" });
       }
       if (missing)
-        warnings.push(`${label}：${missing}张图片没找到，请连同图片一起导入（直接选飞书导出的ZIP最省事）`);
+        warnings.push(`${label}：${missing}张图片没找到。直接选飞书导出的ZIP最省事；或者现在再点“插入文件”，把那些图片一次全选，会自动填回原位置`);
     };
     try {
       for (let i = 0; i < list.length; i++) {
@@ -351,6 +359,17 @@ export default function PostComposer({
               },
               f.name,
             );
+            continue;
+          }
+          const holder = placeholders.get(imageKey(f.name));
+          if (holder && /\.(png|jpe?g|webp|gif)$/i.test(f.name)) {
+            if (total + f.size > MAX_TOTAL_BYTES)
+              throw Error("文章附件总量超过80MB，请减少图片。");
+            const a = await readAsset(f);
+            newAssets[a.id] = a;
+            total += a.size;
+            fills[holder] = { id: holder, type: "image", assetId: a.id, title: a.name, alt: "" };
+            placeholders.delete(imageKey(f.name));
             continue;
           }
           if (/\.(pdf|html?|png|jpe?g|webp|gif)$/i.test(f.name) && !extract) {
@@ -396,13 +415,19 @@ export default function PostComposer({
         setDoc((d) =>
           d.meta.title.trim() ? d : { ...d, meta: { ...d.meta, title: titleFromDoc } },
         );
+      const filled = Object.keys(fills).length;
+      if (filled)
+        setDoc((d) => ({ ...d, blocks: d.blocks.map((b) => fills[b.id] || b) }));
       if (blocks.length) {
         insertBlocks(blocks, after);
         setActive(blocks.at(-1).id);
       }
+      const msgs = [];
+      if (filled) msgs.push(`${filled}张图片已填回原位置`);
+      if (blocks.length) msgs.push(`${blocks.length}个内容块已插入`);
       setNotice(
-        blocks.length
-          ? `${blocks.length}个内容块已插入${warnings.length ? "。" + warnings.join("；") : ""}`
+        msgs.length
+          ? msgs.join("，") + (warnings.length ? "。" + warnings.join("；") : "")
           : "",
       );
       if (errors.length) setError(errors.join("；"));
